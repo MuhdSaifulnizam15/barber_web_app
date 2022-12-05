@@ -2,11 +2,11 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer class="footer footer-center  w-full p-4">
-      <div class="text-center">
+    <footer className="footer footer-center w-full p-4">
+      <div className="text-center">
         <p>
           Copyright © 2022 -{" "}
-          <a class="font-semibold" href="mailto:m.sohanemon@gmail.com">
+          <a class="font-semibold" href="mailto:muhdsaifulnizam1998@gmail.com">
             Muhd Saiful
           </a>
         </p>
