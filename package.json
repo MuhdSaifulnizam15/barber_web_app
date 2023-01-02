@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "@next/font": "^13.0.5",
+    "@reduxjs/toolkit": "^1.9.1",
     "axios": "^1.2.2",
+    "dev-logger-simple": "^0.1.1",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",
     "formik": "^2.2.9",
+    "js-cookie": "^3.0.1",
     "next": "13.0.5",
     "next-auth": "^4.18.4",
     "next-themes": "^0.2.1",
@@ -22,6 +25,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.0",
+    "redux-thunk": "^2.4.2",
     "swr": "^2.0.0",
     "yup": "^0.32.11"
   },
