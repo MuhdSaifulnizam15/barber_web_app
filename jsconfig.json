@@ -4,10 +4,8 @@
     "paths": {
       "@/components/*": ["src/components/*"],
       "@/constants/*": ["src/constants/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/lib/*": ["src/lib/*"],
       "@/pages/*": ["src/pages/*"],
-      "@/services/*": ["src/services/*"],
+      "@/redux/*": ["src/redux/*"],
       "@/styles/*": ["src/styles/*"],
       "@/utils/*": ["src/utils/*"]
     }
