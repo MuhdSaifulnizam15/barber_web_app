@@ -1,25 +1,70 @@
-import { createSlice } from '@reduxjs/toolkit'
+import Router from 'next/router'
+import axios from 'axios'
+import { AUTHENTICATE, DEAUTHENTICATE, SET_USER } from '../types'
+import { API } from '../../config'
+import { setCookie, removeCookie } from '../../utils/cookie'
+import { devLogger } from 'dev-logger-simple'
 
-const usersSlice = createSlice({
-  name: 'users',
-  initialState: {
-    token: null,
-    user: null,
-  },
-  reducers: {
-    userAdded(state, action) {
-      state.push({
-        id: action.payload.id,
-        text: action.payload.text,
-        completed: false,
+// gets token from the api and stores it in the redux store and in cookie
+const login = ({ email, password }, type) => {
+  if (type !== 'signin' && type !== 'signup') {
+    throw new Error('Wrong API call!')
+  }
+  return (dispatch) => {
+    axios
+      .post(`${API}/auth/login`, { email, password })
+      .then((response) => {
+        setCookie('token', response.data.token)
+        setCookie('user', JSON.stringify(response.data.data))
+        Router.push('/')
+        dispatch({ type: AUTHENTICATE, payload: response.data.token })
+        dispatch({ type: SET_USER, payload: response.data.data })
       })
-    },
-    userToggled(state, action) {
-      const user = state.find((user) => user.id === action.payload)
-      user.completed = !user.completed
-    },
-  },
-})
+      .catch((err) => {
+        // throw new Error(err);
+        devLogger(err)
+      })
+  }
+}
+const register = ({ email, password }, type) => {
+  if (type !== 'signin' && type !== 'signup') {
+    throw new Error('Wrong API call!')
+  }
+  return (dispatch) => {
+    axios
+      .post(`${API}/auth/login`, { email, password })
+      .then((response) => {
+        setCookie('token', response.data.token)
+        Router.push('/')
+        dispatch({ type: AUTHENTICATE, payload: response.data.token })
+      })
+      .catch((err) => {
+        // throw new Error(err);
+        devLogger(err)
+      })
+  }
+}
 
-export const { userAdded, userToggled } = usersSlice.actions
-export default usersSlice.reducer
+// gets the token from the cookie and saves it in the store
+const reauthenticate = (token) => {
+  return (dispatch) => {
+    dispatch({ type: AUTHENTICATE, payload: token })
+  }
+}
+
+// removing the token
+const deauthenticate = () => {
+  return (dispatch) => {
+    removeCookie('token')
+    removeCookie('user')
+    Router.push('/')
+    dispatch({ type: DEAUTHENTICATE })
+  }
+}
+
+export default {
+  login,
+  register,
+  reauthenticate,
+  deauthenticate,
+}
