@@ -1,62 +1,37 @@
-import { useState } from 'react'
-import {signIn} from "next-auth/react";
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+
+import Error from '../../components/Error'
+import Spinner from '../../components/Spinner'
+
+import { registerUser } from '../../features/auth/authActions'
 
 export default function Register() {
-  const [fullName, setFullName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
+  const { loading, userInfo, error, success } = useSelector(
+    (state) => state.auth,
+  )
+  const dispatch = useDispatch()
+  const { register, handleSubmit } = useForm()
   const router = useRouter();
 
-  const registerUser = async (event) => {
-    event.preventDefault()
+  useEffect(() => {
+    // redirect user to login page if registration was successful
+    if (success) router.push('/auth/login')
+    // redirect authenticated user to profile screen
+    console.log('userInfo', userInfo)
+    // if (userInfo) router.push('/')
+  }, [router, userInfo, success])
 
-    try {
-      const body = {
-        fullName: fullName,
-        email: email,
-        password: password,
-      }
-
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      console.log('response', response);
-
-      if (response.status !== 200) {
-        console.log('something went wrong')
-        //set an error banner here
-      } else {
-        resetForm()
-        console.log('form submitted successfully !!!')
-
-        signIn('credentials', {
-          email,
-          password,
-          callbackUrl: `${window.location.origin}/index`,
-          redirect: false,
-        })
-          .then(function (result) {
-            router.push(result.url)
-          })
-          .catch((err) => {
-            alert('Failed to register: ' + err.toString())
-          })
-      }
-      //check response, if success is false, dont take them to success page
-    } catch (error) {
-      console.log('there was an error submitting', error)
+  const submitForm = (data) => {
+    // check if passwords match
+    if (data.password !== data.confirm_password) {
+      alert('Password mismatch')
     }
-  }
-
-  const resetForm = () => {
-    setFullName('')
-    setEmail('')
-    setPassword('')
+    // transform email string to lowercase to avoid case sensitivity issues in login
+    data.email = data.email.toLowerCase()
+    dispatch(registerUser(data))
   }
 
   return (
@@ -76,24 +51,38 @@ export default function Register() {
           className="mt-8 space-y-6"
           action="#"
           method="POST"
-          onSubmit={registerUser}
+          onSubmit={handleSubmit(submitForm)}
         >
           <input type="hidden" name="remember" value="true" />
           <div>
             <div className="my-4">
               <label htmlFor="fname" className="sr-only">
-                Full Name
+                First Name
               </label>
-              <p className="mb-2 sm:text-sm">Full Name</p>
+              <p className="mb-2 sm:text-sm">First Name</p>
               <input
                 id="fname"
                 name="fname"
                 type="text"
                 required
+                {...register('first_name')}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                placeholder="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                placeholder="First Name"
+              />
+            </div>
+            <div className="my-4">
+              <label htmlFor="lname" className="sr-only">
+                Last Name
+              </label>
+              <p className="mb-2 sm:text-sm">Last Name</p>
+              <input
+                id="lname"
+                name="lname"
+                type="text"
+                required
+                {...register('last_name')}
+                className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                placeholder="Last Name"
               />
             </div>
             <div className="my-4">
@@ -106,10 +95,9 @@ export default function Register() {
                 name="email"
                 type="email"
                 required
+                {...register('email')}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="my-4">
@@ -122,10 +110,24 @@ export default function Register() {
                 name="password"
                 type="password"
                 required
+                {...register('password')}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="my-4">
+              <label htmlFor="cpassword" className="sr-only">
+                Confirm Password
+              </label>
+              <p className="my-2 sm:text-sm">Confirm Password</p>
+              <input
+                id="cpassword"
+                name="cpassword"
+                type="password"
+                required
+                {...register('confirm_password')}
+                className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                placeholder="Confirm Password"
               />
             </div>
           </div>
@@ -133,6 +135,7 @@ export default function Register() {
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -150,7 +153,7 @@ export default function Register() {
                   />
                 </svg>
               </span>
-              Register Account
+              {loading ? <Spinner /> : 'Register Account'}
             </button>
           </div>
         </form>

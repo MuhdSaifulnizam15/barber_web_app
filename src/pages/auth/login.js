@@ -1,4 +1,29 @@
-export default function Login() {
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { userLogin } from '../../features/auth/authActions'
+import Error from '../../components/Error'
+import { useRouter } from 'next/router'
+
+const Login = () => {
+  const { loading, error, userInfo } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+  const { register, handleSubmit } = useForm()
+  const router = useRouter();
+
+  // redirect authenticated user to profile screen
+  useEffect(() => {
+    console.log('userInfo', userInfo);  
+    if (userInfo) {
+      router.push('/')
+    }
+  }, [router, userInfo])
+
+  const submitForm = (data) => {
+    console.log(data.email)
+  }
+
   return (
     <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -12,7 +37,7 @@ export default function Login() {
             Sign in to your account
           </h2>
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={handleSubmit(submitForm)}>
           <input type="hidden" name="remember" value="true" />
           <div>
             <div className="my-4">
@@ -25,6 +50,7 @@ export default function Login() {
                 name="email"
                 type="email"
                 autoComplete="email"
+                {...register('email')}
                 required
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Email address"
@@ -39,6 +65,7 @@ export default function Login() {
                 id="password"
                 name="password"
                 type="password"
+                {...register('password')}
                 autoComplete="current-password"
                 required
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
@@ -73,6 +100,7 @@ export default function Login() {
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -90,7 +118,7 @@ export default function Login() {
                   />
                 </svg>
               </span>
-              Sign in
+              {loading ? <Spinner /> : 'Sign In'}
             </button>
           </div>
         </form>
@@ -110,3 +138,5 @@ export default function Login() {
     </div>
   )
 }
+
+export default Login
