@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { userLogin } from '../../features/auth/authActions'
 import Error from '../../components/Error'
 import { useRouter } from 'next/router'
+import Spinner from '@/components/Spinner'
 
 const Login = () => {
   const { loading, error, userInfo } = useSelector((state) => state.auth)
@@ -13,15 +14,14 @@ const Login = () => {
   const router = useRouter();
 
   // redirect authenticated user to profile screen
-  useEffect(() => {
-    console.log('userInfo', userInfo);  
-    if (userInfo) {
-      router.push('/')
+  useEffect(() => { 
+    if (userInfo?.email) {
+      router.push('/')  
     }
   }, [router, userInfo])
 
   const submitForm = (data) => {
-    console.log(data.email)
+    dispatch(userLogin(data))
   }
 
   return (
