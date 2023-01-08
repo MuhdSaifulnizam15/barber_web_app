@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="footer footer-center w-full p-4">
+    <footer className="footer footer-center w-full p-4 absolute max-md-bottom-10">
       <div className="text-center">
         <p>
           Copyright © 2022 -{' '}
@@ -15,7 +15,7 @@ const Footer = () => {
         </p>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

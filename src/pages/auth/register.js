@@ -1,38 +1,38 @@
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Error from '../../components/Error'
-import Spinner from '../../components/Spinner'
+import Spinner from '../../components/Spinner';
 
-import { registerUser } from '../../features/auth/authActions'
+import { registerUser } from '../../features/auth/authActions';
 
 export default function Register() {
-  const { loading, userInfo, error, success } = useSelector(
-    (state) => state.auth,
-  )
-  const dispatch = useDispatch()
-  const { register, handleSubmit } = useForm()
+  const { loading, userInfo, success } = useSelector(
+    state => state.auth,
+  );
+  const dispatch = useDispatch();
+  const { register, handleSubmit } = useForm();
   const router = useRouter();
 
   useEffect(() => {
     // redirect user to login page if registration was successful
-    if (success) router.push('/auth/login')
+    if (success) router.push('/auth/login');
     // redirect authenticated user to profile screen
-    console.log('userInfo', userInfo)
-    // if (userInfo) router.push('/')
-  }, [router, userInfo, success])
+    console.log('userInfo', userInfo);
+    // if (userInfo) router.push('/');
+  }, [router, userInfo, success]);
 
   const submitForm = (data) => {
     // check if passwords match
     if (data.password !== data.confirm_password) {
-      alert('Password mismatch')
+      alert('Password mismatch');
     }
     // transform email string to lowercase to avoid case sensitivity issues in login
-    data.email = data.email.toLowerCase()
-    dispatch(registerUser(data))
-  }
+    data.email = data.email.toLowerCase();
+    dispatch(registerUser(data));
+  };
 
   return (
     <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -161,15 +161,15 @@ export default function Register() {
         <div className="flex justify-center container mx-auto mt-6 text-sm">
           <div className="flex ">
             Already have an account?
-            <a
+            <Link
               href="/auth/login"
               className="font-medium text-indigo-600 hover:text-indigo-500 pl-1"
             >
               Login here
-            </a>
+            </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
