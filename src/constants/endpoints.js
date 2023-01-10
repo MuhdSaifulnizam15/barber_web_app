@@ -13,4 +13,6 @@ const endpoint = {
     city: '/city',
 }
 
-export default endpoint;
+export default { 
+    endpoint
+};

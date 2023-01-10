@@ -1,0 +1,577 @@
+import { Fragment, useState, useEffect } from 'react'
+import { Listbox, Transition } from '@headlessui/react'
+import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid'
+
+import Navbar from 'components/Navbar'
+import Footer from 'components/Footer'
+import Header from 'components/Header'
+
+import branchData from 'data/branch';
+import pointsData from 'data/point';
+import servicesData from 'data/service';
+import staffData from 'data/staff';
+
+import { classNames } from 'utils/helper'
+
+const Sales = () => {
+  const [selectedService, setSelectedService] = useState([])
+  const [staff, setStaff] = useState(staffData[0])
+  const [branch, setBranch] = useState(branchData[0])
+  const [total, setTotal] = useState(0)
+  const [totalPoints, setTotalPoints] = useState(0)
+  const [customerName, setCustomerName] = useState()
+  const [customerPhoneNumber, setCustomerPhoneNum] = useState()
+
+  useEffect(() => {
+    const newTotal = selectedService
+      .reduce((a, v) => (a = a + v.price * v.quantity), 0)
+      .toFixed(2)
+    setTotal(newTotal)
+  }, [selectedService])
+
+  useEffect(() => {
+    if (customerPhoneNumber && customerPhoneNumber.length > 9) {
+      checkForTotalPoints()
+    } else {
+      setTotalPoints(0)
+      setCustomerName('')
+    }
+  }, [customerPhoneNumber])
+
+  const incrementQuantity = (service, index) => {
+    console.log('service', index, selectedService[index]?.quantity + 1, service)
+    updateServiceList(index, selectedService[index]?.quantity + 1)
+  }
+
+  const decrementQuantity = (service, index) => {
+    console.log('service', index, selectedService[index]?.quantity > 1)
+    if (selectedService[index]?.quantity > 1)
+      updateServiceList(index, selectedService[index]?.quantity - 1 || 0)
+  }
+
+  const updateServiceList = (index, val) => {
+    const newServices = selectedService.map((serv, itemVal) => {
+      if (itemVal === index) {
+        serv.quantity = val
+        return serv
+      } else {
+        return serv
+      }
+    })
+    console.log('newSer', newServices)
+    setSelectedService(newServices)
+  }
+
+  const checkForTotalPoints = () => {
+    const data = pointsData.find(
+      (data) => data.phone_no == customerPhoneNumber,
+    )
+    if (data) {
+      setTotalPoints(data?.points)
+      setCustomerName(data?.name)
+    } else {
+      setTotalPoints(0)
+      setCustomerName('')
+    }
+  }
+
+  const handleEventChange = (event) => {
+    switch (event.target.name) {
+      case 'customer_phone_no':
+        setCustomerPhoneNum(event.target.value)
+        break
+
+      case 'customer_name':
+        setCustomerName(event.target.value)
+        break
+
+      default:
+        break
+    }
+    // setEmail(event.target.value)
+  }
+
+  const resetForm = () => {
+    console.log('resetForm')
+    setTotal(0)
+    setSelectedService([])
+    setStaff({})
+    setBranch({})
+  }
+
+  return (
+    <div>
+      <main>
+        <Navbar />
+        <Header title="Sales" />
+        <div className="mx-auto max-w-7xl overflow-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0 overflow-auto">
+            <div className="mt-10 sm:mt-0 overflow-auto">
+              <div className="md:grid md:gap-6">
+                <form action="#" method="POST">
+                  <div className="overflow-hidden shadow sm:rounded-md">
+                    <div className="bg-white px-4 py-5 sm:p-6">
+                      <div className="grid grid-cols-6 gap-6">
+                        <div className="col-span-6 sm:col-span-3">
+                          <Listbox value={branch} onChange={setBranch}>
+                            {({ open }) => (
+                              <>
+                                <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                  Branch
+                                </Listbox.Label>
+                                <div className="relative mt-1">
+                                  <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                                    <span className="flex items-center">
+                                      <span
+                                        className="ml-3 block truncate text-gray-700"
+                                        style={
+                                          !branch.name
+                                            ? { color: 'red' }
+                                            : { color: 'black' }
+                                        }
+                                      >
+                                        {branch.name
+                                          ? branch.name
+                                          : 'Select Branch'}
+                                      </span>
+                                    </span>
+                                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                      <ChevronUpDownIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    show={open}
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      {branchData.map((item) => (
+                                        <Listbox.Option
+                                          key={item.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? 'text-white bg-indigo-600'
+                                                : 'text-gray-900',
+                                              'relative cursor-default select-none py-2 pl-3 pr-9',
+                                            )
+                                          }
+                                          value={item}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <div className="flex items-center">
+                                                <span
+                                                  className={classNames(
+                                                    selected
+                                                      ? 'font-semibold'
+                                                      : 'font-normal',
+                                                    'ml-3 block truncate',
+                                                  )}
+                                                >
+                                                  {item.name}
+                                                </span>
+                                              </div>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? 'text-white'
+                                                      : 'text-indigo-600',
+                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </>
+                            )}
+                          </Listbox>
+                        </div>
+
+                        <div className="col-span-6 sm:col-span-3">
+                          <Listbox value={staff} onChange={setStaff}>
+                            {({ open }) => (
+                              <>
+                                <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                  Staff
+                                </Listbox.Label>
+                                <div className="relative mt-1">
+                                  <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                                    <span className="flex items-center">
+                                      {staff?.avatar ? (
+                                        <img
+                                          src={staff.avatar}
+                                          alt=""
+                                          className="h-6 w-6 flex-shrink-0 rounded-full"
+                                        />
+                                      ) : null}
+                                      <span
+                                        className="ml-3 block truncate text-gray-700"
+                                        style={
+                                          !staff.name
+                                            ? { color: 'red' }
+                                            : { color: 'black' }
+                                        }
+                                      >
+                                        {staff.name
+                                          ? staff.name
+                                          : 'Select Staff'}
+                                      </span>
+                                    </span>
+                                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                      <ChevronUpDownIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    show={open}
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      {staffData.map((person) => (
+                                        <Listbox.Option
+                                          key={person.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? 'text-white bg-indigo-600'
+                                                : 'text-gray-900',
+                                              'relative cursor-default select-none py-2 pl-3 pr-9',
+                                            )
+                                          }
+                                          value={person}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <div className="flex items-center">
+                                                <img
+                                                  src={person.avatar}
+                                                  alt=""
+                                                  className="h-6 w-6 flex-shrink-0 rounded-full"
+                                                />
+                                                <span
+                                                  className={classNames(
+                                                    selected
+                                                      ? 'font-semibold'
+                                                      : 'font-normal',
+                                                    'ml-3 block truncate',
+                                                  )}
+                                                >
+                                                  {person.name}
+                                                </span>
+                                              </div>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? 'text-white'
+                                                      : 'text-indigo-600',
+                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </>
+                            )}
+                          </Listbox>
+                        </div>
+
+                        <div className="col-span-6 sm:col-span-4">
+                          <Listbox
+                            value={selectedService}
+                            onChange={setSelectedService}
+                            multiple
+                          >
+                            {({ open }) => (
+                              <>
+                                <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                  Services
+                                </Listbox.Label>
+                                <div className="relative mt-1">
+                                  <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                                    <span className="flex items-center">
+                                      <span className="block truncate text-gray-700">
+                                        Select Services
+                                      </span>
+                                    </span>
+                                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                      <ChevronUpDownIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Listbox.Button>
+
+                                  <Transition
+                                    show={open}
+                                    as={Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                  >
+                                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      {servicesData.map((service) => (
+                                        <Listbox.Option
+                                          key={service.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? 'text-white bg-indigo-600'
+                                                : 'text-gray-900',
+                                              'relative cursor-default select-none py-2 pl-3 pr-9',
+                                            )
+                                          }
+                                          value={service}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <div className="flex items-center">
+                                                <span
+                                                  className={classNames(
+                                                    selected
+                                                      ? 'font-semibold'
+                                                      : 'font-normal',
+                                                    'ml-3 block truncate',
+                                                  )}
+                                                >
+                                                  {service.name}
+                                                </span>
+                                              </div>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? 'text-white'
+                                                      : 'text-indigo-600',
+                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                    </Listbox.Options>
+                                  </Transition>
+                                </div>
+                              </>
+                            )}
+                          </Listbox>
+                        </div>
+
+                        <div className="col-span-6 sm:col-span-4">
+                          <label
+                            htmlFor="price"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Customer Phone Number
+                          </label>
+                          <input
+                            type="text"
+                            name="customer_phone_no"
+                            id="customer_phone_no"
+                            className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                            placeholder="Enter Customer Phone Number"
+                            onChange={handleEventChange}
+                            value={customerPhoneNumber}
+                          />
+                        </div>
+
+                        <div className="col-span-6 sm:col-span-4">
+                          <label
+                            htmlFor="price"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Customer Name
+                          </label>
+                          <input
+                            type="text"
+                            name="customer_name"
+                            id="customer_name"
+                            className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                            placeholder="Enter Customer Name"
+                            onChange={handleEventChange}
+                            value={customerName}
+                          />
+                          <label className="block mt-3 text-gray-700 text-right text-sm">
+                            {'Total Points Collected: ' + totalPoints}
+                          </label>
+                        </div>
+
+                        <div className="col-span-6">
+                          <label
+                            htmlFor="price"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            List of Services
+                          </label>
+
+                          <div className="flex flex-col">
+                            <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                              <div className="py-4 inline-block min-w-full sm:px-6 lg:px-8">
+                                <div className="overflow-hidden">
+                                  <table className="min-w-full text-center">
+                                    <thead className="border-b bg-gray-50">
+                                      <tr>
+                                        <th
+                                          scope="col"
+                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                        >
+                                          Service
+                                        </th>
+                                        <th
+                                          scope="col"
+                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                        >
+                                          Quantity
+                                        </th>
+                                        <th
+                                          scope="col"
+                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                        >
+                                          Price
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {selectedService.map((service, index) => (
+                                        <tr className="bg-white border-b">
+                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            {service.name}
+                                          </td>
+                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-row h-10 min-w-200 w-max-300 rounded-lg relative bg-transparent mt-1 text-center px-2">
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  decrementQuantity(
+                                                    service,
+                                                    index,
+                                                  )
+                                                }
+                                                className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
+                                              >
+                                                <span className="m-auto text-2xl font-thin">
+                                                  −
+                                                </span>
+                                              </button>
+                                              <input
+                                                className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-900  outline-none"
+                                                value={service?.quantity || 1}
+                                                disabled
+                                              />
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  incrementQuantity(
+                                                    service,
+                                                    index,
+                                                  )
+                                                }
+                                                className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
+                                              >
+                                                <span className="m-auto text-2xl font-thin">
+                                                  +
+                                                </span>
+                                              </button>
+                                            </div>
+                                          </td>
+                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                            {'RM ' +
+                                              (
+                                                service.price * service.quantity
+                                              ).toFixed(2)}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                      <tr className="bg-white border-b">
+                                        <td
+                                          colSpan="2"
+                                          className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
+                                        >
+                                          Total
+                                        </td>
+                                        <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                          {'RM ' + total}
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
+                      <button
+                        type="button"
+                        onClick={() => resetForm()}
+                        className="justify-center rounded-md border border-transparent bg-yellow-600 py-2 px-4 mx-6 text-sm font-medium text-white shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        type="submit"
+                        className="justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Footer />
+      </main>
+    </div>
+  )
+}
+
+export default Sales

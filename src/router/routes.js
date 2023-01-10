@@ -20,12 +20,12 @@ export const PATH_AUTH = {
 
 export const PATH_PAGE = {
     comingSoon: '/coming-soon',
-    maintenance: '/maintenance',
+    // maintenance: '/maintenance',
     page404: '/404',
-    page500: '/500',
-    about: '/about-us',
-    contact: '/contact-us',
-    faqs: '/faqs',
+    // page500: '/500',
+    // about: '/about-us',
+    // contact: '/contact-us',
+    // faqs: '/faqs',
 };
 
 export const PATH_DASHBOARD = {
