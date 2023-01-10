@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUserDetailsQuery } from "services/auth/authService";
-import { logout, setCredentials } from "features/auth/authSlice";
+import { logout, setUserProfileInfo } from "features/auth/authSlice";
+import { getUserDetails } from "features/auth/authActions";
 
 const Header = ({ title = "Dashboard" }) => {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo, userToken } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   // automatically authenticate user if token is found
@@ -14,7 +15,7 @@ const Header = ({ title = "Dashboard" }) => {
   });
 
   useEffect(() => {
-    if (data) dispatch(setCredentials(data?.user));
+    if (data?.user) dispatch(setUserProfileInfo(data?.user));
   }, [data, dispatch]);
 
   return (

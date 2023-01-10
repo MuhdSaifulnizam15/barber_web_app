@@ -16,10 +16,10 @@ const Register = () => {
 
   useEffect(() => {
     // redirect user to login page if registration was successful
-    if (success) navigate.push('/auth/login');
+    if (success) navigate('/auth/login');
     // redirect authenticated user to profile screen
     console.log('userInfo', userInfo);
-    // if (userInfo) navigate.push('/');
+    // if (userInfo) navigate('/');
   }, [navigate, userInfo, success]);
 
   const submitForm = (data) => {

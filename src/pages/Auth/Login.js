@@ -15,7 +15,7 @@ const Login = () => {
   // redirect authenticated user to profile screen
   useEffect(() => { 
     if (userInfo?.email) {
-      navigate.push('/sales')  
+      navigate('/sales')  
     }
   }, [navigate, userInfo])
 

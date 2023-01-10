@@ -6,10 +6,7 @@ import Footer from 'components/Footer'
 import Header from 'components/Header'
 
 const Profile = () => {
-  const { userInfo, userToken } = useSelector((state) => state.auth)
-
-  console.log('userInfo in Profile.js', userInfo);
-  console.log('userToken in Profile.js', userToken);
+  const { userInfo, userToken } = useSelector((state) => state.auth);
 
   return (
     <div>
