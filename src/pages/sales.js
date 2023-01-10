@@ -608,7 +608,7 @@ export default function Sales() {
                                       ))}
                                       <tr className="bg-white border-b">
                                         <td
-                                          colspan="2"
+                                          colSpan="2"
                                           className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
                                         >
                                           Total

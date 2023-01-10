@@ -1,30 +1,52 @@
-import { Fragment } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Fragment, useEffect } from 'react'
+import { Disclosure, Menu, Transition } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { classNames } from '../utils/helpers';
+import { classNames } from '../utils/helpers'
+import { logout } from '../features/auth/authSlice'
+import { getUserDetails } from '../features/auth/authActions'
 
 const user = {
   name: 'Tom Cook',
   email: 'tom@example.com',
   imageUrl:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-};
+}
 
 const userNavigation = [
   { name: 'Your Profile', href: '/profile' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
+  { name: 'Settings', href: '/settings' },
+]
 
 const navigation = [
   { name: 'Sales', href: '/sales', current: true, isAdmin: false },
-  { name: 'Transactions', href: '/transactions', current: false, isAdmin: true },
+  {
+    name: 'Transactions',
+    href: '/transactions',
+    current: false,
+    isAdmin: true,
+  },
   { name: 'History', href: '/history', current: false, isAdmin: false },
-  { name: 'Dashboard', href: '/admin/dashboard', current: false, isAdmin: true },
+  {
+    name: 'Dashboard',
+    href: '/admin/dashboard',
+    current: false,
+    isAdmin: true,
+  },
 ]
 
 const Navbar = ({ current = 'Sales' }) => {
+  const { userInfo, userToken } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
+
+  // automatically authenticate user if token is found
+  useEffect(() => {
+    if (userToken) {
+      // dispatch(getUserDetails())
+    }
+  }, [userToken, dispatch])
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -40,24 +62,26 @@ const Navbar = ({ current = 'Sales' }) => {
                   />
                 </div>
                 <div className="hidden md:block">
-                      <div className="ml-10 flex items-baseline space-x-4">
-                        {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
-                            className={classNames(
-                              item.name === current
-                                ? 'bg-gray-900 text-white'
-                                : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                              'px-3 py-2 rounded-md text-sm font-medium'
-                            )}
-                            aria-current={item.name === current ? 'page' : undefined}
-                          >
-                            {item.name}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="ml-10 flex items-baseline space-x-4">
+                    {navigation.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.name === current
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'px-3 py-2 rounded-md text-sm font-medium',
+                        )}
+                        aria-current={
+                          item.name === current ? 'page' : undefined
+                        }
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
               <div className="hidden md:block">
                 <div className="ml-4 flex items-center md:ml-6">
@@ -118,22 +142,24 @@ const Navbar = ({ current = 'Sales' }) => {
           </div>
 
           <Disclosure.Panel className="md:hidden">
-          <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-                  {navigation.map((item) => (
-                    <Disclosure.Button
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      className={classNames(
-                        item.name === current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                        'block px-3 py-2 rounded-md text-base font-medium'
-                      )}
-                      aria-current={item.name === current ? 'page' : undefined}
-                    >
-                      {item.name}
-                    </Disclosure.Button>
-                  ))}
-                </div>
+            <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+              {navigation.map((item) => (
+                <Disclosure.Button
+                  key={item.name}
+                  as="a"
+                  href={item.href}
+                  className={classNames(
+                    item.name === current
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    'block px-3 py-2 rounded-md text-base font-medium',
+                  )}
+                  aria-current={item.name === current ? 'page' : undefined}
+                >
+                  {item.name}
+                </Disclosure.Button>
+              ))}
+            </div>
             <div className="border-t border-gray-700 pt-4 pb-3">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
@@ -163,13 +189,20 @@ const Navbar = ({ current = 'Sales' }) => {
                     {item.name}
                   </Disclosure.Button>
                 ))}
+                <button
+                  onClick={() => dispatch(logout())}
+                  type="button"
+                  className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                >
+                  Sign Out
+                </button>
               </div>
             </div>
           </Disclosure.Panel>
         </>
       )}
     </Disclosure>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

@@ -16,7 +16,7 @@ const Login = () => {
   // redirect authenticated user to profile screen
   useEffect(() => { 
     if (userInfo?.email) {
-      router.push('/')  
+      router.push('/sales')  
     }
   }, [router, userInfo])
 
