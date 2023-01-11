@@ -10,20 +10,19 @@ import Header from "components/Header";
 // import branchData from 'data/branch';
 import pointsData from "data/point";
 // import servicesData from 'data/service';
-// import staffData from 'data/staff';
 
 import { classNames } from "utils/helper";
 
 import { useDispatch, useSelector } from "redux/store";
 
 import { getAllBranch } from 'redux/slices/branch';
+import { getAllStaff } from 'redux/slices/staff';
 
 const Sales = () => {
   const [selectedService, setSelectedService] = useState([]);
-  const [staff, setStaff] = useState();
+  const [selectedStaff, setSelectedStaff] = useState();
   const [selectedBranch, setSelectedBranch] = useState();
-  
-  const [staffData, setStaffData] = useState([]);
+
   const [servicesData, setServicesData] = useState([]);
   const [total, setTotal] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
@@ -31,6 +30,8 @@ const Sales = () => {
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
 
   const { branch } = useSelector((state) => state.branch);
+  const { staff } = useSelector((state) => state.staff);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const Sales = () => {
 
   useEffect(async() => {
     await dispatch(getAllBranch());
+    await dispatch(getAllStaff());
   }, [dispatch]);
 
   const incrementQuantity = (service, index) => {
@@ -118,7 +120,7 @@ const Sales = () => {
     console.log("resetForm");
     setTotal(0);
     setSelectedService([]);
-    setStaff({});
+    setSelectedStaff({});
     setSelectedBranch({});
   };
 
@@ -234,7 +236,7 @@ const Sales = () => {
                         </div>
 
                         <div className="col-span-6 sm:col-span-3">
-                          <Listbox value={staff} onChange={setStaff}>
+                          <Listbox value={selectedStaff} onChange={setSelectedStaff}>
                             {({ open }) => (
                               <>
                                 <Listbox.Label className="block text-sm font-medium text-gray-700">
@@ -243,9 +245,9 @@ const Sales = () => {
                                 <div className="relative mt-1">
                                   <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
                                     <span className="flex items-center">
-                                      {staff?.avatar ? (
+                                      {selectedStaff?.avatar ? (
                                         <img
-                                          src={staff.avatar}
+                                          src={selectedStaff.avatar}
                                           alt=""
                                           className="h-6 w-6 flex-shrink-0 rounded-full"
                                         />
@@ -253,13 +255,13 @@ const Sales = () => {
                                       <span
                                         className="ml-3 block truncate text-gray-700"
                                         style={
-                                          !staff?.full_name
+                                          !selectedStaff?.full_name
                                             ? { color: "red" }
                                             : { color: "black" }
                                         }
                                       >
-                                        {staff?.full_name
-                                          ? staff.full_name
+                                        {selectedStaff?.full_name
+                                          ? selectedStaff.full_name
                                           : "Select Staff"}
                                       </span>
                                     </span>
@@ -279,8 +281,8 @@ const Sales = () => {
                                     leaveTo="opacity-0"
                                   >
                                     <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      {staffData &&
-                                        staffData.map((person) => (
+                                      {staff.docs &&
+                                        staff.docs.map((person) => (
                                           <Listbox.Option
                                             key={person.id}
                                             className={({ active }) =>
