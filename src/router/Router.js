@@ -1,17 +1,21 @@
-import { Suspense, lazy } from 'react';
-import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+import { Suspense, lazy } from "react";
+import { Navigate, useRoutes, useLocation } from "react-router-dom";
+
+import GuestGuard from "guards/GuestGuard";
+import AuthGuard from "guards/AuthGuard";
+import RoleBasedGuard from "guards/RoleBasedGuard";
+
+import { PATH_PAGE } from "router/routes";
 
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => (props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { pathname } = useLocation();
-  const isDashboard = pathname.includes('/dashboard');
+  const isDashboard = pathname.includes("/sales");
 
   return (
-    <Suspense
-      fallback={<div>Loading ....</div>}
-    >
+    <Suspense fallback={<div>Loading ....</div>}>
       <Component {...props} />
     </Suspense>
   );
@@ -20,85 +24,127 @@ const Loadable = (Component) => (props) => {
 export default function Router() {
   return useRoutes([
     {
-      path: 'auth',
+      path: "auth",
       children: [
         {
-          path: 'login',
-          element:
-          //   <GuestGuard>
+          path: "login",
+          element: (
+            <GuestGuard>
               <Login />
-          //   </GuestGuard>
-          
+            </GuestGuard>
+          ),
         },
         {
-          path: 'register',
+          path: "register",
           element: (
-          //   <GuestGuard>
+            <GuestGuard>
               <Register />
-          //   </GuestGuard>
-          )
+            </GuestGuard>
+          ),
         },
-        { path: 'reset-password', element: <ResetPassword /> },
-        { path: 'forgot-password', element: <ForgotPassword /> }
-      ]
+        {
+          path: "reset-password",
+          element: (
+            <GuestGuard>
+              <ResetPassword />{" "}
+            </GuestGuard>
+          ),
+        },
+        {
+          path: "forgot-password",
+          element: (
+            <GuestGuard>
+              <ForgotPassword />
+            </GuestGuard>
+          ),
+        },
+      ],
     },
 
     // Dashboard Routes
     {
-      path: 'admin',
-      // element: (
-      //   <AuthGuard>
-      //     <DashboardLayout />
-      //   </AuthGuard>
-      // ),
+      path: "admin",
+      // element: <RoleBasedGuard />,
       children: [
-        { path: 'dashboard', element: <Dashboard /> },
-      ]
+        { element: <Navigate to={PATH_PAGE.sales} replace /> },
+        { path: "dashboard", element: <Dashboard /> },
+      ],
     },
 
     // Main Routes
     {
-      path: '*',
+      path: "*",
       // element: <LogoOnlyLayout />,
       children: [
         // { path: 'coming-soon', element: <ComingSoon /> },
         // { path: 'maintenance', element: <Maintenance /> },
         // { path: '500', element: <Page500 /> },
-        { path: '404', element: <NotFound /> },
-        { path: '*', element: <Navigate to="/404" replace /> }
-      ]
+        { path: "404", element: <NotFound /> },
+        { path: "*", element: <Navigate to="/404" replace /> },
+      ],
     },
     {
-      path: '/',
+      path: "/",
+      // element: <AuthGuard />,
       children: [
-        { path: 'history', element: <History /> },
-        { path: 'profile', element: <Profile /> },
-        { path: 'sales', element: <Sales /> },
-        { path: 'transactions', element: <Transaction /> },
-      ]
+        { element: <Navigate to={PATH_PAGE.sales} replace /> },
+        {
+          path: "history",
+          element: (
+            <AuthGuard>
+              <History />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "profile",
+          element: (
+            <AuthGuard>
+              <Profile />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "sales",
+          element: (
+            <AuthGuard>
+              <Sales />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "transactions",
+          element: (
+            <AuthGuard>
+              <Transaction />
+            </AuthGuard>
+          ),
+        },
+      ],
     },
-    { path: '*', element: <Navigate to="/404" replace /> }
-  ])
+    { path: "*", element: <Navigate to="/404" replace /> },
+  ]);
 }
 
 // IMPORT PAGES
 
 // Authentication
-const Login = Loadable(lazy(() => import('pages/Auth/Login')));
-const Register = Loadable(lazy(() => import('pages/Auth/Register')));
-const ResetPassword = Loadable(lazy(() => import('pages/Auth/ResetPassword')));
-const ForgotPassword = Loadable(lazy(() => import('pages/Auth/ForgotPassword')));
+const Login = Loadable(lazy(() => import("pages/Auth/Login")));
+const Register = Loadable(lazy(() => import("pages/Auth/Register")));
+const ResetPassword = Loadable(lazy(() => import("pages/Auth/ResetPassword")));
+const ForgotPassword = Loadable(
+  lazy(() => import("pages/Auth/ForgotPassword"))
+);
 
 // Dashboard
-const Dashboard = Loadable(lazy(() => import('pages/Admin/Dashboard')));
-const History = Loadable(lazy(() => import('pages/History')));
-const Profile = Loadable(lazy(() => import('pages/Profile')));
-const Sales = Loadable(lazy(() => import('pages/Sales')));
-const Transaction = Loadable(lazy(() => import('pages/Transaction')));
-
+const Dashboard = Loadable(lazy(() => import("pages/Admin/Dashboard")));
+const History = Loadable(lazy(() => import("pages/History")));
+const Profile = Loadable(lazy(() => import("pages/Profile")));
+const Sales = Loadable(lazy(() => import("pages/Sales")));
+const Transaction = Loadable(lazy(() => import("pages/Transaction")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
-const NotFound = Loadable(lazy(() => import('pages/404')));
+const NotFound = Loadable(lazy(() => import("pages/404")));
 // const Maintenance = Loadable(lazy(() => import('pages/Maintenance')));
 // const Page500 = Loadable(lazy(() => import('pages/Page500')));

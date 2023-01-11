@@ -1,11 +1,9 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { classNames } from "utils/helper";
-import { logout } from "features/auth/authSlice";
-import { getUserDetails } from "features/auth/authActions";
 
 const user = {
   name: "Tom Cook",
@@ -37,15 +35,7 @@ const navigation = [
 ];
 
 const Navbar = ({ current = "Sales" }) => {
-  const { userInfo, userToken } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  // automatically authenticate user if token is found
-  useEffect(() => {
-    if (userToken) {
-      // dispatch(getUserDetails())
-    }
-  }, [userToken, dispatch]);
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -190,7 +180,7 @@ const Navbar = ({ current = "Sales" }) => {
                   </Disclosure.Button>
                 ))}
                 <button
-                  onClick={() => dispatch(logout())}
+                  onClick={() => console.log('logout')}
                   type="button"
                   className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                 >

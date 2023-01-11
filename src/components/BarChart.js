@@ -1,58 +1,33 @@
-import React from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
+import React from "react";
+import Chart from "react-apexcharts";
+import { faker } from "@faker-js/faker";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Bar Chart',
-    },
+const options = {
+  chart: {
+    id: "apexchart-example",
+  },
+  xaxis: {
+    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+const series = [
+  {
+    name: "series-1",
+    data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+  },
+];
 
 const BarChart = () => {
-  return <Bar options={options} data={data} style={{ border: '1px solid #ABABAB', padding: 10, marginTop: 10, marginBottom: 10 }} />;
-}
+  return (
+    <Chart
+      options={options}
+      series={series}
+      type="bar"
+      width={500}
+      height={320}
+    />
+  );
+};
 
-export default BarChart
+export default BarChart;

@@ -1,26 +1,24 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 
-import { userLogin } from 'features/auth/authActions'
+import useAuth from 'hooks/useAuth';
 import Spinner from 'components/Spinner'
 
 const Login = () => {
-  const { loading, error, userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-  const navigate = useNavigate()
-  
-  // redirect authenticated user to profile screen
-  useEffect(() => { 
-    if (userInfo?.email) {
-      navigate('/sales')  
-    }
-  }, [navigate, userInfo])
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const submitForm = (data) => {
-    dispatch(userLogin(data))
+  const submitForm = async (data) => {
+    try {
+      console.log('data', data);
+      await login(data);
+    } catch (err) {
+      console.log('err', err);
+    }
   }
 
   return (
@@ -104,7 +102,6 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -122,7 +119,7 @@ const Login = () => {
                   />
                 </svg>
               </span>
-              {loading ? <Spinner /> : "Sign In"}
+              Sign In
             </button>
           </div>
         </form>

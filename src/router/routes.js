@@ -26,12 +26,15 @@ export const PATH_PAGE = {
     // about: '/about-us',
     // contact: '/contact-us',
     // faqs: '/faqs',
+
+    settings: '/settings',
+    sales: '/sales',
+    transaction: '/transactions',
+    history: '/transactions',
 };
 
 export const PATH_DASHBOARD = {
     root: ROOTS_DASHBOARD,
-    sales: path(ROOTS_DASHBOARD, '/sales'),
-    transaction: path(ROOTS_DASHBOARD, '/transactions'),
     service: {
         root: path(ROOTS_DASHBOARD, '/services'),
         list: path(ROOTS_DASHBOARD, '/services/list'),
@@ -45,9 +48,6 @@ export const PATH_DASHBOARD = {
         newCategory: path(ROOTS_DASHBOARD, '/category/new'),
         showById: path(ROOTS_DASHBOARD, '/category/detail'),
         editById: path(ROOTS_DASHBOARD, `/category/edit`),
-    },
-    settings: {
-        root: path(ROOTS_DASHBOARD, '/settings'),
     },
     user: {
         root: path(ROOTS_DASHBOARD, '/user'),

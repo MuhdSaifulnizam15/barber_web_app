@@ -1,103 +1,126 @@
-import { Fragment, useState, useEffect } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid'
+import { Fragment, useState, useEffect } from "react";
+import { Listbox, Transition } from "@headlessui/react";
+import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
+import axios from "utils/axios";
 
-import Navbar from 'components/Navbar'
-import Footer from 'components/Footer'
-import Header from 'components/Header'
+import Navbar from "components/Navbar";
+import Footer from "components/Footer";
+import Header from "components/Header";
 
-import branchData from 'data/branch';
-import pointsData from 'data/point';
-import servicesData from 'data/service';
-import staffData from 'data/staff';
+// import branchData from 'data/branch';
+import pointsData from "data/point";
+// import servicesData from 'data/service';
+// import staffData from 'data/staff';
 
-import { classNames } from 'utils/helper'
+import { classNames } from "utils/helper";
+
+import { useDispatch, useSelector } from "redux/store";
+
+import { getAllBranch } from 'redux/slices/branch';
 
 const Sales = () => {
-  const [selectedService, setSelectedService] = useState([])
-  const [staff, setStaff] = useState(staffData[0])
-  const [branch, setBranch] = useState(branchData[0])
-  const [total, setTotal] = useState(0)
-  const [totalPoints, setTotalPoints] = useState(0)
-  const [customerName, setCustomerName] = useState()
-  const [customerPhoneNumber, setCustomerPhoneNum] = useState()
+  const [selectedService, setSelectedService] = useState([]);
+  const [staff, setStaff] = useState();
+  const [selectedBranch, setSelectedBranch] = useState();
+  
+  const [staffData, setStaffData] = useState([]);
+  const [servicesData, setServicesData] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [customerName, setCustomerName] = useState();
+  const [customerPhoneNumber, setCustomerPhoneNum] = useState();
+
+  const { branch } = useSelector((state) => state.branch);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const newTotal = selectedService
-      .reduce((a, v) => (a = a + v.price * v.quantity), 0)
-      .toFixed(2)
-    setTotal(newTotal)
-  }, [selectedService])
+      .reduce((a, v) => (a = a + v.price * (v.quantity || 1)), 0)
+      .toFixed(2);
+    setTotal(newTotal);
+  }, [selectedService]);
 
   useEffect(() => {
     if (customerPhoneNumber && customerPhoneNumber.length > 9) {
-      checkForTotalPoints()
+      checkForTotalPoints();
     } else {
-      setTotalPoints(0)
-      setCustomerName('')
+      setTotalPoints(0);
+      setCustomerName("");
     }
-  }, [customerPhoneNumber])
+  }, [customerPhoneNumber]);
+
+  useEffect(async() => {
+    await dispatch(getAllBranch());
+  }, [dispatch]);
 
   const incrementQuantity = (service, index) => {
-    console.log('service', index, selectedService[index]?.quantity + 1, service)
-    updateServiceList(index, selectedService[index]?.quantity + 1)
-  }
+    console.log(
+      "service",
+      index,
+      selectedService[index]?.quantity + 1,
+      service
+    );
+    updateServiceList(index, (selectedService[index]?.quantity || 1) + 1);
+  };
 
   const decrementQuantity = (service, index) => {
-    console.log('service', index, selectedService[index]?.quantity > 1)
+    console.log("service", index, selectedService[index]?.quantity > 1);
     if (selectedService[index]?.quantity > 1)
-      updateServiceList(index, selectedService[index]?.quantity - 1 || 0)
-  }
+      updateServiceList(
+        index,
+        (selectedService[index]?.quantity || 1) - 1 || 0
+      );
+  };
 
   const updateServiceList = (index, val) => {
     const newServices = selectedService.map((serv, itemVal) => {
       if (itemVal === index) {
-        serv.quantity = val
-        return serv
+        serv.quantity = val;
+        return serv;
       } else {
-        return serv
+        return serv;
       }
-    })
-    console.log('newSer', newServices)
-    setSelectedService(newServices)
-  }
+    });
+    console.log("newSer", newServices);
+    setSelectedService(newServices);
+  };
 
   const checkForTotalPoints = () => {
     const data = pointsData.find(
-      (data) => data.phone_no == customerPhoneNumber,
-    )
+      (data) => data.phone_no == customerPhoneNumber
+    );
     if (data) {
-      setTotalPoints(data?.points)
-      setCustomerName(data?.name)
+      setTotalPoints(data?.points);
+      setCustomerName(data?.name);
     } else {
-      setTotalPoints(0)
-      setCustomerName('')
+      setTotalPoints(0);
+      setCustomerName("");
     }
-  }
+  };
 
   const handleEventChange = (event) => {
     switch (event.target.name) {
-      case 'customer_phone_no':
-        setCustomerPhoneNum(event.target.value)
-        break
+      case "customer_phone_no":
+        setCustomerPhoneNum(event.target.value);
+        break;
 
-      case 'customer_name':
-        setCustomerName(event.target.value)
-        break
+      case "customer_name":
+        setCustomerName(event.target.value);
+        break;
 
       default:
-        break
+        break;
     }
     // setEmail(event.target.value)
-  }
+  };
 
   const resetForm = () => {
-    console.log('resetForm')
-    setTotal(0)
-    setSelectedService([])
-    setStaff({})
-    setBranch({})
-  }
+    console.log("resetForm");
+    setTotal(0);
+    setSelectedService([]);
+    setStaff({});
+    setSelectedBranch({});
+  };
 
   return (
     <div>
@@ -113,7 +136,10 @@ const Sales = () => {
                     <div className="bg-white px-4 py-5 sm:p-6">
                       <div className="grid grid-cols-6 gap-6">
                         <div className="col-span-6 sm:col-span-3">
-                          <Listbox value={branch} onChange={setBranch}>
+                          <Listbox
+                            value={selectedBranch}
+                            onChange={setSelectedBranch}
+                          >
                             {({ open }) => (
                               <>
                                 <Listbox.Label className="block text-sm font-medium text-gray-700">
@@ -125,14 +151,14 @@ const Sales = () => {
                                       <span
                                         className="ml-3 block truncate text-gray-700"
                                         style={
-                                          !branch.name
-                                            ? { color: 'red' }
-                                            : { color: 'black' }
+                                          !selectedBranch?.name
+                                            ? { color: "red" }
+                                            : { color: "black" }
                                         }
                                       >
-                                        {branch.name
-                                          ? branch.name
-                                          : 'Select Branch'}
+                                        {selectedBranch?.name
+                                          ? selectedBranch.name
+                                          : "Select Branch"}
                                       </span>
                                     </span>
                                     <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -151,53 +177,54 @@ const Sales = () => {
                                     leaveTo="opacity-0"
                                   >
                                     <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      {branchData.map((item) => (
-                                        <Listbox.Option
-                                          key={item.id}
-                                          className={({ active }) =>
-                                            classNames(
-                                              active
-                                                ? 'text-white bg-indigo-600'
-                                                : 'text-gray-900',
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            )
-                                          }
-                                          value={item}
-                                        >
-                                          {({ selected, active }) => (
-                                            <>
-                                              <div className="flex items-center">
-                                                <span
-                                                  className={classNames(
-                                                    selected
-                                                      ? 'font-semibold'
-                                                      : 'font-normal',
-                                                    'ml-3 block truncate',
-                                                  )}
-                                                >
-                                                  {item.name}
-                                                </span>
-                                              </div>
+                                      {branch.docs &&
+                                        branch.docs.map((item) => (
+                                          <Listbox.Option
+                                            key={item.id}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active
+                                                  ? "text-white bg-indigo-600"
+                                                  : "text-gray-900",
+                                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                              )
+                                            }
+                                            value={item}
+                                          >
+                                            {({ selected, active }) => (
+                                              <>
+                                                <div className="flex items-center">
+                                                  <span
+                                                    className={classNames(
+                                                      selected
+                                                        ? "font-semibold"
+                                                        : "font-normal",
+                                                      "ml-3 block truncate"
+                                                    )}
+                                                  >
+                                                    {item.name}
+                                                  </span>
+                                                </div>
 
-                                              {selected ? (
-                                                <span
-                                                  className={classNames(
-                                                    active
-                                                      ? 'text-white'
-                                                      : 'text-indigo-600',
-                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                  )}
-                                                >
-                                                  <CheckIcon
-                                                    className="h-5 w-5"
-                                                    aria-hidden="true"
-                                                  />
-                                                </span>
-                                              ) : null}
-                                            </>
-                                          )}
-                                        </Listbox.Option>
-                                      ))}
+                                                {selected ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-indigo-600",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                    )}
+                                                  >
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
                                     </Listbox.Options>
                                   </Transition>
                                 </div>
@@ -226,14 +253,14 @@ const Sales = () => {
                                       <span
                                         className="ml-3 block truncate text-gray-700"
                                         style={
-                                          !staff.name
-                                            ? { color: 'red' }
-                                            : { color: 'black' }
+                                          !staff?.full_name
+                                            ? { color: "red" }
+                                            : { color: "black" }
                                         }
                                       >
-                                        {staff.name
-                                          ? staff.name
-                                          : 'Select Staff'}
+                                        {staff?.full_name
+                                          ? staff.full_name
+                                          : "Select Staff"}
                                       </span>
                                     </span>
                                     <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -252,58 +279,59 @@ const Sales = () => {
                                     leaveTo="opacity-0"
                                   >
                                     <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      {staffData.map((person) => (
-                                        <Listbox.Option
-                                          key={person.id}
-                                          className={({ active }) =>
-                                            classNames(
-                                              active
-                                                ? 'text-white bg-indigo-600'
-                                                : 'text-gray-900',
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            )
-                                          }
-                                          value={person}
-                                        >
-                                          {({ selected, active }) => (
-                                            <>
-                                              <div className="flex items-center">
-                                                <img
-                                                  src={person.avatar}
-                                                  alt=""
-                                                  className="h-6 w-6 flex-shrink-0 rounded-full"
-                                                />
-                                                <span
-                                                  className={classNames(
-                                                    selected
-                                                      ? 'font-semibold'
-                                                      : 'font-normal',
-                                                    'ml-3 block truncate',
-                                                  )}
-                                                >
-                                                  {person.name}
-                                                </span>
-                                              </div>
-
-                                              {selected ? (
-                                                <span
-                                                  className={classNames(
-                                                    active
-                                                      ? 'text-white'
-                                                      : 'text-indigo-600',
-                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                  )}
-                                                >
-                                                  <CheckIcon
-                                                    className="h-5 w-5"
-                                                    aria-hidden="true"
+                                      {staffData &&
+                                        staffData.map((person) => (
+                                          <Listbox.Option
+                                            key={person.id}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active
+                                                  ? "text-white bg-indigo-600"
+                                                  : "text-gray-900",
+                                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                              )
+                                            }
+                                            value={person}
+                                          >
+                                            {({ selected, active }) => (
+                                              <>
+                                                <div className="flex items-center">
+                                                  <img
+                                                    src={person.avatar}
+                                                    alt=""
+                                                    className="h-6 w-6 flex-shrink-0 rounded-full"
                                                   />
-                                                </span>
-                                              ) : null}
-                                            </>
-                                          )}
-                                        </Listbox.Option>
-                                      ))}
+                                                  <span
+                                                    className={classNames(
+                                                      selected
+                                                        ? "font-semibold"
+                                                        : "font-normal",
+                                                      "ml-3 block truncate"
+                                                    )}
+                                                  >
+                                                    {person.full_name}
+                                                  </span>
+                                                </div>
+
+                                                {selected ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-indigo-600",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                    )}
+                                                  >
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
                                     </Listbox.Options>
                                   </Transition>
                                 </div>
@@ -352,9 +380,9 @@ const Sales = () => {
                                           className={({ active }) =>
                                             classNames(
                                               active
-                                                ? 'text-white bg-indigo-600'
-                                                : 'text-gray-900',
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
+                                                ? "text-white bg-indigo-600"
+                                                : "text-gray-900",
+                                              "relative cursor-default select-none py-2 pl-3 pr-9"
                                             )
                                           }
                                           value={service}
@@ -365,9 +393,9 @@ const Sales = () => {
                                                 <span
                                                   className={classNames(
                                                     selected
-                                                      ? 'font-semibold'
-                                                      : 'font-normal',
-                                                    'ml-3 block truncate',
+                                                      ? "font-semibold"
+                                                      : "font-normal",
+                                                    "ml-3 block truncate"
                                                   )}
                                                 >
                                                   {service.name}
@@ -378,9 +406,9 @@ const Sales = () => {
                                                 <span
                                                   className={classNames(
                                                     active
-                                                      ? 'text-white'
-                                                      : 'text-indigo-600',
-                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                      ? "text-white"
+                                                      : "text-indigo-600",
+                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
                                                   )}
                                                 >
                                                   <CheckIcon
@@ -436,7 +464,7 @@ const Sales = () => {
                             value={customerName}
                           />
                           <label className="block mt-3 text-gray-700 text-right text-sm">
-                            {'Total Points Collected: ' + totalPoints}
+                            {"Total Points Collected: " + totalPoints}
                           </label>
                         </div>
 
@@ -488,7 +516,7 @@ const Sales = () => {
                                                 onClick={() =>
                                                   decrementQuantity(
                                                     service,
-                                                    index,
+                                                    index
                                                   )
                                                 }
                                                 className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
@@ -507,7 +535,7 @@ const Sales = () => {
                                                 onClick={() =>
                                                   incrementQuantity(
                                                     service,
-                                                    index,
+                                                    index
                                                   )
                                                 }
                                                 className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
@@ -519,9 +547,10 @@ const Sales = () => {
                                             </div>
                                           </td>
                                           <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            {'RM ' +
+                                            {"RM " +
                                               (
-                                                service.price * service.quantity
+                                                service.price *
+                                                (service?.quantity || 1)
                                               ).toFixed(2)}
                                           </td>
                                         </tr>
@@ -534,7 +563,7 @@ const Sales = () => {
                                           Total
                                         </td>
                                         <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                          {'RM ' + total}
+                                          {"RM " + total}
                                         </td>
                                       </tr>
                                     </tbody>
@@ -571,7 +600,7 @@ const Sales = () => {
         <Footer />
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default Sales
+export default Sales;

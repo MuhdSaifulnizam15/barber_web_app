@@ -5,28 +5,36 @@
   "dependencies": {
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "^2.0.13",
-    "@reduxjs/toolkit": "^1.9.1",
-    "@testing-library/jest-dom": "^5.16.5",
+    "@reduxjs/toolkit": "^1.7.1",
+    "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.2.2",
-    "chart.js": "^4.1.2",
-    "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0",
+    "apexcharts": "^3.36.3",
+    "axios": "^0.24.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
+    "postcss-import": "^12.0.0",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-apexcharts": "^1.4.0",
+    "react-dom": "^17.0.2",
     "react-hook-form": "^7.41.5",
-    "react-redux": "^8.0.5",
-    "react-router-dom": "^6.6.2",
-    "react-scripts": "5.0.1",
-    "redux": "^4.2.0",
-    "validator": "^13.7.0",
-    "web-vitals": "^2.1.4"
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^6.0.0-beta.4",
+    "react-scripts": "^4.0.1",
+    "redux": "^4.1.2",
+    "redux-persist": "^6.0.0",
+    "web-vitals": "^2.1.0",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "concurrently \"yarn tailwind:css\" \"yarn start\"",
+    "tailwind:css": "postcss ./src/styles/tailwind.css -o ./src/styles/index.css --watch"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +56,10 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "autoprefixer": "^10.4.13",
+    "concurrently": "^7.6.0",
+    "postcss": "^8.4.21",
+    "postcss-cli": "^10.1.0",
     "tailwindcss": "^3.2.4"
   }
 }

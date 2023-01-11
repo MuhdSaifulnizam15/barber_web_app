@@ -1,26 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 
 import Spinner from 'components/Spinner';
-import { registerUser } from 'features/auth/authActions';
 
 const Register = () => {
-  const { loading, userInfo, success } = useSelector(
-    state => state.auth,
-  );
-  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate()
-
-  useEffect(() => {
-    // redirect user to login page if registration was successful
-    if (success) navigate('/auth/login');
-    // redirect authenticated user to profile screen
-    console.log('userInfo', userInfo);
-    // if (userInfo) navigate('/');
-  }, [navigate, userInfo, success]);
 
   const submitForm = (data) => {
     // check if passwords match
@@ -29,7 +15,6 @@ const Register = () => {
     }
     // transform email string to lowercase to avoid case sensitivity issues in login
     data.email = data.email.toLowerCase();
-    dispatch(registerUser(data));
   };
 
   return (
@@ -133,7 +118,6 @@ const Register = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -151,7 +135,7 @@ const Register = () => {
                   />
                 </svg>
               </span>
-              {loading ? <Spinner /> : 'Register Account'}
+              'Register Account'
             </button>
           </div>
         </form>
