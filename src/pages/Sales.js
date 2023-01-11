@@ -15,15 +15,15 @@ import { classNames } from "utils/helper";
 
 import { useDispatch, useSelector } from "redux/store";
 
-import { getAllBranch } from 'redux/slices/branch';
-import { getAllStaff } from 'redux/slices/staff';
+import { getAllBranch } from "redux/slices/branch";
+import { getAllStaff } from "redux/slices/staff";
+import { getAllServices } from "redux/slices/services";
 
 const Sales = () => {
   const [selectedService, setSelectedService] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState();
   const [selectedBranch, setSelectedBranch] = useState();
 
-  const [servicesData, setServicesData] = useState([]);
   const [total, setTotal] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [customerName, setCustomerName] = useState();
@@ -31,6 +31,7 @@ const Sales = () => {
 
   const { branch } = useSelector((state) => state.branch);
   const { staff } = useSelector((state) => state.staff);
+  const { services } = useSelector((state) => state.services);
 
   const dispatch = useDispatch();
 
@@ -50,16 +51,18 @@ const Sales = () => {
     }
   }, [customerPhoneNumber]);
 
-  useEffect(async() => {
+  useEffect(async () => {
     await dispatch(getAllBranch());
     await dispatch(getAllStaff());
+    await dispatch(getAllServices());
   }, [dispatch]);
 
   const incrementQuantity = (service, index) => {
     console.log(
       "service",
       index,
-      selectedService[index]?.quantity + 1,
+      selectedService,
+      (selectedService[index]?.quantity || 1) + 1,
       service
     );
     updateServiceList(index, (selectedService[index]?.quantity || 1) + 1);
@@ -77,14 +80,21 @@ const Sales = () => {
   const updateServiceList = (index, val) => {
     const newServices = selectedService.map((serv, itemVal) => {
       if (itemVal === index) {
-        serv.quantity = val;
-        return serv;
+        return { ...serv, quantity: val };
       } else {
         return serv;
       }
     });
     console.log("newSer", newServices);
     setSelectedService(newServices);
+  };
+
+  const removeServiceFromList = (index) => {
+    // selectedService.splice(index, 1)
+    // console.log("newSer", selectedService);
+    setSelectedService(
+      selectedService.filter((item, itemVal) => itemVal !== index)
+    );
   };
 
   const checkForTotalPoints = () => {
@@ -122,6 +132,8 @@ const Sales = () => {
     setSelectedService([]);
     setSelectedStaff({});
     setSelectedBranch({});
+    setCustomerName('');
+    setCustomerPhoneNum('');
   };
 
   return (
@@ -236,7 +248,10 @@ const Sales = () => {
                         </div>
 
                         <div className="col-span-6 sm:col-span-3">
-                          <Listbox value={selectedStaff} onChange={setSelectedStaff}>
+                          <Listbox
+                            value={selectedStaff}
+                            onChange={setSelectedStaff}
+                          >
                             {({ open }) => (
                               <>
                                 <Listbox.Label className="block text-sm font-medium text-gray-700">
@@ -376,53 +391,63 @@ const Sales = () => {
                                     leaveTo="opacity-0"
                                   >
                                     <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      {servicesData.map((service) => (
-                                        <Listbox.Option
-                                          key={service.id}
-                                          className={({ active }) =>
-                                            classNames(
-                                              active
-                                                ? "text-white bg-indigo-600"
-                                                : "text-gray-900",
-                                              "relative cursor-default select-none py-2 pl-3 pr-9"
-                                            )
-                                          }
-                                          value={service}
-                                        >
-                                          {({ selected, active }) => (
-                                            <>
-                                              <div className="flex items-center">
-                                                <span
-                                                  className={classNames(
-                                                    selected
-                                                      ? "font-semibold"
-                                                      : "font-normal",
-                                                    "ml-3 block truncate"
-                                                  )}
-                                                >
-                                                  {service.name}
-                                                </span>
-                                              </div>
+                                      {services.docs &&
+                                        services.docs.map((service) => (
+                                          <Listbox.Option
+                                            key={service.id}
+                                            className={({ active }) =>
+                                              classNames(
+                                                active
+                                                  ? "text-white bg-indigo-600"
+                                                  : "text-gray-900",
+                                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                              )
+                                            }
+                                            value={service}
+                                          >
+                                            {({ selected, active }) => (
+                                              <>
+                                                <div className="flex items-center">
+                                                  <span
+                                                    className={classNames(
+                                                      selected ||
+                                                        selectedService.some(
+                                                          (item) =>
+                                                            item.name ===
+                                                            service.name
+                                                        )
+                                                        ? "font-semibold"
+                                                        : "font-normal",
+                                                      "ml-3 block truncate"
+                                                    )}
+                                                  >
+                                                    {service.name}
+                                                  </span>
+                                                </div>
 
-                                              {selected ? (
-                                                <span
-                                                  className={classNames(
-                                                    active
-                                                      ? "text-white"
-                                                      : "text-indigo-600",
-                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                  )}
-                                                >
-                                                  <CheckIcon
-                                                    className="h-5 w-5"
-                                                    aria-hidden="true"
-                                                  />
-                                                </span>
-                                              ) : null}
-                                            </>
-                                          )}
-                                        </Listbox.Option>
-                                      ))}
+                                                {selected ||
+                                                selectedService.some(
+                                                  (item) =>
+                                                    item.name === service.name
+                                                ) ? (
+                                                  <span
+                                                    className={classNames(
+                                                      active
+                                                        ? "text-white"
+                                                        : "text-indigo-600",
+                                                      "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                    )}
+                                                  >
+                                                    <CheckIcon
+                                                      className="h-5 w-5"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </span>
+                                                ) : null}
+                                              </>
+                                            )}
+                                          </Listbox.Option>
+                                        ))}
                                     </Listbox.Options>
                                   </Transition>
                                 </div>
@@ -503,6 +528,12 @@ const Sales = () => {
                                         >
                                           Price
                                         </th>
+                                        <th
+                                          scope="col"
+                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                        >
+                                          Action
+                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -555,19 +586,46 @@ const Sales = () => {
                                                 (service?.quantity || 1)
                                               ).toFixed(2)}
                                           </td>
+                                          <td className="text-sm text-gray-900 font-light p-2 whitespace-nowrap">
+                                            <button
+                                              type="button"
+                                              className="justify-center rounded-md border border-transparent px-2 py-1 bg-red-600 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                              onClick={() =>
+                                                removeServiceFromList(index)
+                                              }
+                                            >
+                                              X
+                                            </button>
+                                          </td>
                                         </tr>
                                       ))}
-                                      <tr className="bg-white border-b">
-                                        <td
-                                          colSpan="2"
-                                          className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
-                                        >
-                                          Total
-                                        </td>
-                                        <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                          {"RM " + total}
-                                        </td>
-                                      </tr>
+                                      {total > 0 && (
+                                        <>
+                                          <tr className="bg-white border-b">
+                                            <td
+                                              colSpan="2"
+                                              className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
+                                            >
+                                              Total
+                                            </td>
+                                            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                              {"RM " + total}
+                                            </td>
+                                          </tr>
+
+                                          <tr className="bg-white border-b">
+                                            <td
+                                              colSpan="2"
+                                              className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
+                                            >
+                                              Estimated Rewarded Points
+                                            </td>
+                                            <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                              {"+ " + Math.ceil(total)}
+                                            </td>
+                                          </tr>
+                                        </>
+                                      )}
                                     </tbody>
                                   </table>
                                 </div>
