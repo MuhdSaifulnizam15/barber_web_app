@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "redux/store";
 import { getAllBranch } from "redux/slices/branch";
 import { getAllStaff } from "redux/slices/staff";
 import { getAllServices } from "redux/slices/services";
+import { getAllCustomer } from "redux/slices/customer";
 
 const Sales = () => {
   const [selectedService, setSelectedService] = useState([]);
@@ -32,6 +33,7 @@ const Sales = () => {
   const { branch } = useSelector((state) => state.branch);
   const { staff } = useSelector((state) => state.staff);
   const { services } = useSelector((state) => state.services);
+  const { customer } = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
 
@@ -55,6 +57,7 @@ const Sales = () => {
     await dispatch(getAllBranch());
     await dispatch(getAllStaff());
     await dispatch(getAllServices());
+    await dispatch(getAllCustomer());
   }, [dispatch]);
 
   const incrementQuantity = (service, index) => {
@@ -98,11 +101,12 @@ const Sales = () => {
   };
 
   const checkForTotalPoints = () => {
-    const data = pointsData.find(
+
+    const data = customer.docs.find(
       (data) => data.phone_no == customerPhoneNumber
     );
     if (data) {
-      setTotalPoints(data?.points);
+      setTotalPoints(data?.total_membership_point);
       setCustomerName(data?.name);
     } else {
       setTotalPoints(0);
