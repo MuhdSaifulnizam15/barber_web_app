@@ -19,13 +19,17 @@ import { getAllBranch } from "redux/slices/branch";
 import { getAllStaff } from "redux/slices/staff";
 import { getAllServices } from "redux/slices/services";
 import { getAllCustomer } from "redux/slices/customer";
+import { addSales } from "redux/slices/sales";
 
 const Sales = () => {
   const [selectedService, setSelectedService] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState();
   const [selectedBranch, setSelectedBranch] = useState();
+  const [selectedCustomer, setSelectedCustomer] = useState({});
 
   const [total, setTotal] = useState(0);
+  const [rewardedPoint, setRewardedPoint] = useState(0);
+  const [redeemedPoint, setRedeemedPoint] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [customerName, setCustomerName] = useState();
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
@@ -42,6 +46,7 @@ const Sales = () => {
       .reduce((a, v) => (a = a + v.price * (v.quantity || 1)), 0)
       .toFixed(2);
     setTotal(newTotal);
+    setRewardedPoint(Math.ceil(newTotal));
   }, [selectedService]);
 
   useEffect(() => {
@@ -101,13 +106,13 @@ const Sales = () => {
   };
 
   const checkForTotalPoints = () => {
-
     const data = customer.docs.find(
       (data) => data.phone_no == customerPhoneNumber
     );
     if (data) {
       setTotalPoints(data?.total_membership_point);
       setCustomerName(data?.name);
+      setSelectedCustomer(data);
     } else {
       setTotalPoints(0);
       setCustomerName("");
@@ -136,8 +141,27 @@ const Sales = () => {
     setSelectedService([]);
     setSelectedStaff({});
     setSelectedBranch({});
-    setCustomerName('');
-    setCustomerPhoneNum('');
+    setCustomerName("");
+    setCustomerPhoneNum("");
+  };
+
+  const submitForm = (event) => {
+    event.preventDefault();
+    const data = {
+      branch_id: selectedBranch.id,
+      barber_id: selectedStaff.id,
+      customer_id: selectedCustomer.id,
+      order: selectedService.map((serv) => ({
+        service: serv.id,
+        quantity: serv.quantity,
+      })),
+      total: total,
+      total_redeemed_point: redeemedPoint,
+      total_rewarded_point: rewardedPoint,
+    };
+
+    console.log("data", data);
+    dispatch(addSales(data))
   };
 
   return (
@@ -149,7 +173,7 @@ const Sales = () => {
           <div className="px-4 py-6 sm:px-0 overflow-auto">
             <div className="mt-10 sm:mt-0 overflow-auto">
               <div className="md:grid md:gap-6">
-                <form action="#" method="POST">
+                <form action="#" method="POST" onSubmit={submitForm}>
                   <div className="overflow-hidden shadow sm:rounded-md">
                     <div className="bg-white px-4 py-5 sm:p-6">
                       <div className="grid grid-cols-6 gap-6">
