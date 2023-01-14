@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "redux/store";
 import { getAllBranch } from "redux/slices/branch";
 import { getAllStaff } from "redux/slices/staff";
 import { getAllServices } from "redux/slices/services";
-import { getAllCustomer } from "redux/slices/customer";
+import { getCustomerByPhoneNo } from "redux/slices/customer";
 import { addSales } from "redux/slices/sales";
 
 const Sales = () => {
@@ -50,7 +50,7 @@ const Sales = () => {
   }, [selectedService]);
 
   useEffect(() => {
-    if (customerPhoneNumber && customerPhoneNumber.length > 9) {
+    if (customerPhoneNumber && customerPhoneNumber.length > 9 && customerPhoneNumber.length < 12) {
       checkForTotalPoints();
     } else {
       setTotalPoints(0);
@@ -62,8 +62,19 @@ const Sales = () => {
     await dispatch(getAllBranch());
     await dispatch(getAllStaff());
     await dispatch(getAllServices());
-    await dispatch(getAllCustomer());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("customer", customer);
+    if (customer) {
+      setTotalPoints(customer?.total_membership_point);
+      setCustomerName(customer?.name);
+      setSelectedCustomer(customer);
+    } else {
+      setTotalPoints(0);
+      setCustomerName("");
+    }
+  }, [customer]);
 
   const incrementQuantity = (service, index) => {
     console.log(
@@ -106,17 +117,7 @@ const Sales = () => {
   };
 
   const checkForTotalPoints = () => {
-    const data = customer.docs.find(
-      (data) => data.phone_no == customerPhoneNumber
-    );
-    if (data) {
-      setTotalPoints(data?.total_membership_point);
-      setCustomerName(data?.name);
-      setSelectedCustomer(data);
-    } else {
-      setTotalPoints(0);
-      setCustomerName("");
-    }
+    dispatch(getCustomerByPhoneNo(customerPhoneNumber));
   };
 
   const handleEventChange = (event) => {
@@ -161,7 +162,7 @@ const Sales = () => {
     };
 
     console.log("data", data);
-    dispatch(addSales(data))
+    dispatch(addSales(data));
   };
 
   return (
@@ -171,11 +172,11 @@ const Sales = () => {
         <Header title="Sales" />
         <div className="mx-auto max-w-7xl overflow-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0 overflow-auto">
-            <div className="mt-10 sm:mt-0 overflow-auto">
+            <div className="mt-2 sm:mt-0 overflow-auto">
               <div className="md:grid md:gap-6">
                 <form action="#" method="POST" onSubmit={submitForm}>
                   <div className="overflow-hidden shadow sm:rounded-md">
-                    <div className="bg-white px-4 py-5 sm:p-6">
+                    <div className="bg-white px-4 py-1 sm:p-6">
                       <div className="grid grid-cols-6 gap-6">
                         <div className="col-span-6 sm:col-span-3">
                           <Listbox

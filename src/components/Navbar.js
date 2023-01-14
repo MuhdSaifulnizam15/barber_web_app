@@ -14,7 +14,7 @@ const user = {
 
 const userNavigation = [
   { name: "Your Profile", href: "/profile" },
-  { name: "Settings", href: "/settings" },
+  // { name: "Settings", href: "/settings" },
 ];
 
 const navigation = [
@@ -25,13 +25,13 @@ const navigation = [
     current: false,
     isAdmin: true,
   },
-  { name: "History", href: "/history", current: false, isAdmin: false },
-  {
-    name: "Dashboard",
-    href: "/admin/dashboard",
-    current: false,
-    isAdmin: true,
-  },
+  // { name: "History", href: "/history", current: false, isAdmin: false },
+  // {
+  //   name: "Dashboard",
+  //   href: "/admin/dashboard",
+  //   current: false,
+  //   isAdmin: true,
+  // },
 ];
 
 const Navbar = ({ current = "Sales" }) => {
