@@ -23,7 +23,7 @@ const LineChart = () => {
     options={options}
     series={series}
     type="line"
-    width="500"
+    // width="500"
   />
   );
 };
