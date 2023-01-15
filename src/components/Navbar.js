@@ -1,7 +1,7 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useDispatch } from "react-redux";
+import useAuth from "hooks/useAuth";
 
 import { classNames } from "utils/helper";
 
@@ -35,7 +35,7 @@ const navigation = [
 ];
 
 const Navbar = ({ current = "Sales" }) => {
-  const dispatch = useDispatch();
+  const { logout } = useAuth();
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -112,6 +112,17 @@ const Navbar = ({ current = "Sales" }) => {
                             )}
                           </Menu.Item>
                         ))}
+                        <Menu.Item key={'logout'}>
+                          {({ active }) => (
+                             <button
+                          onClick={() => logout() }
+                          type="button"
+                          className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                        >
+                          Sign Out
+                        </button>
+                          )}
+                        </Menu.Item>
                       </Menu.Items>
                     </Transition>
                   </Menu>
@@ -180,7 +191,7 @@ const Navbar = ({ current = "Sales" }) => {
                   </Disclosure.Button>
                 ))}
                 <button
-                  onClick={() => console.log('logout')}
+                  onClick={() => console.log("logout")}
                   type="button"
                   className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                 >
