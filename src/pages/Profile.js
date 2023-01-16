@@ -4,7 +4,12 @@ import Navbar from 'components/Navbar'
 import Footer from 'components/Footer'
 import Header from 'components/Header'
 
+import useAuth from 'hooks/useAuth';
+
 const Profile = () => {
+  const { user } = useAuth();
+  console.log('user', user)
+;
   return (
     <div>
       <main>
@@ -27,7 +32,7 @@ const Profile = () => {
                           First name
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                          -
+                          {user?.first_name}
                         </dd>
                       </div>
                       <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -35,7 +40,7 @@ const Profile = () => {
                           Last Name
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                          -
+                          {user?.last_name}
                         </dd>
                       </div>
                       <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -43,7 +48,7 @@ const Profile = () => {
                           Email address
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                          -
+                          {user?.email}
                         </dd>
                       </div>
                       <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -51,7 +56,7 @@ const Profile = () => {
                           Role
                         </dt>
                         <dd className="mt-1 text-sm capitalize text-gray-900 sm:col-span-2 sm:mt-0">
-                          -
+                          {user?.role}
                         </dd>
                       </div>
                     </dl>
