@@ -112,15 +112,18 @@ const Navbar = ({ current = "Sales" }) => {
                             )}
                           </Menu.Item>
                         ))}
-                        <Menu.Item key={'logout'}>
+                        <Menu.Item key={"logout"}>
                           {({ active }) => (
-                             <button
-                          onClick={() => logout() }
-                          type="button"
-                          className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                        >
-                          Sign Out
-                        </button>
+                            <button
+                              onClick={() => logout()}
+                              type="button"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block w-full px-4 py-2 text-sm text-gray-700 text-left"
+                              )}
+                            >
+                              Sign Out
+                            </button>
                           )}
                         </Menu.Item>
                       </Menu.Items>
@@ -191,9 +194,9 @@ const Navbar = ({ current = "Sales" }) => {
                   </Disclosure.Button>
                 ))}
                 <button
-                  onClick={() => console.log("logout")}
+                  onClick={() => logout()}
                   type="button"
-                  className="block w-full rounded-md px-3 py-2 text-base text-left font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                  className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                 >
                   Sign Out
                 </button>

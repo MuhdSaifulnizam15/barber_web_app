@@ -1,16 +1,16 @@
 // IMPORTANT:
 // Change this mode depends on environment
-const mode = 'local'; // dev | prod | local
+const mode = 'dev'; // dev | prod | local
 
 const configuration = {
     local: {
         apiUrl: 'http://localhost:3001/api/v1/',
     },
     dev: {
-        apiUrl: 'http://localhost:3001/api/v1/', // to be changed
+        apiUrl: 'https://api.rolexbarbershop.com/api/v1/', // to be changed
     },
     prod: {
-        apiUrl: 'http://localhost:3001/api/v1/', // to be changed
+        apiUrl: 'https://test-api.rolexbarbershop.com/api/v1/', // to be changed
     }
 };
 

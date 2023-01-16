@@ -2,19 +2,24 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom'
 
+import useAuth from 'hooks/useAuth';
 import Spinner from 'components/Spinner';
 
 const Register = () => {
   const { register, handleSubmit } = useForm();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { registerUser } = useAuth();
 
-  const submitForm = (data) => {
+
+  const submitForm = async (data) => {
     // check if passwords match
     if (data.password !== data.confirm_password) {
       alert('Password mismatch');
     }
     // transform email string to lowercase to avoid case sensitivity issues in login
     data.email = data.email.toLowerCase();
+    console.log('data', data);
+    await registerUser(data);
   };
 
   return (
@@ -135,7 +140,7 @@ const Register = () => {
                   />
                 </svg>
               </span>
-              'Register Account'
+              Register Account
             </button>
           </div>
         </form>

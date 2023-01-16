@@ -47,12 +47,10 @@ const handlers = {
     user: null
   }),
   REGISTER: (state, action) => {
-    const { user } = action.payload;
-
     return {
       ...state,
-      isAuthenticated: true,
-      user
+      isAuthenticated: false,
+      user: null
     };
   },
   FORGOT_PASSWORD: (state, action) => {
@@ -83,7 +81,7 @@ const AuthContext = createContext({
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   refresh: () => Promise.resolve(),
-  register: () => Promise.resolve(),
+  registerUser: () => Promise.resolve(),
   forgotPassword: () => Promise.resolve(),
   resetPassword: () => Promise.resolve()
 });
@@ -198,20 +196,17 @@ function AuthProvider({ children }) {
     });
   }
 
-  const register = async (email, password, firstName, lastName) => {
+  const registerUser = async ({ email, password, first_name, last_name }) => {
     const response = await axios.post('/auth/register', {
       email,
       password,
-      firstName,
-      lastName
+      first_name,
+      last_name
     });
-    const { user } = response.data;
+    console.log('res registerUser', response.data)
 
     dispatch({
-      type: 'REGISTER',
-      payload: {
-        user
-      }
+      type: 'REGISTER'
     });
   };
 
@@ -239,7 +234,7 @@ function AuthProvider({ children }) {
         method: 'jwt',
         login,
         logout,
-        register,
+        registerUser,
         resetPassword,
         forgotPassword,
         updateProfile
