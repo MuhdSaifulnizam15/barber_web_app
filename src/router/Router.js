@@ -12,7 +12,7 @@ import { PATH_PAGE } from "router/routes";
 const Loadable = (Component) => (props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { pathname } = useLocation();
-  const isDashboard = pathname.includes("/sales");
+  const isDashboard = pathname.includes("/admin");
 
   return (
     <Suspense fallback={<div>Loading ....</div>}>
@@ -87,7 +87,7 @@ export default function Router() {
       path: "/",
       // element: <AuthGuard />,
       children: [
-        { element: <Navigate to={PATH_PAGE.sales} replace /> },
+        // { element: <Navigate to={PATH_PAGE.sales} replace /> },
         {
           path: "history",
           element: (
@@ -120,6 +120,7 @@ export default function Router() {
             </AuthGuard>
           ),
         },
+        { path: "/", element: <Navigate to="/sales" replace /> },
       ],
     },
     { path: "*", element: <Navigate to="/404" replace /> },
