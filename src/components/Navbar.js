@@ -5,6 +5,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import useAuth from "hooks/useAuth";
 
 import { classNames } from "utils/helper";
+import { PATH_PAGE, PATH_ADMIN } from "router/routes";
 
 const userNavigation = [
   { name: "Your Profile", href: "/profile" },
@@ -15,7 +16,7 @@ const navigation = [
   { name: "Sales", href: "/sales", current: true, isAdmin: false },
   {
     name: "Transactions",
-    href: "/transactions",
+    href: PATH_PAGE.transaction,
     current: false,
     isAdmin: true,
   },
@@ -26,6 +27,12 @@ const navigation = [
   //   current: false,
   //   isAdmin: true,
   // },
+  {
+    name: "Users",
+    href: PATH_ADMIN.user.root,
+    current: false,
+    isAdmin: true,
+  },
 ];
 
 const Navbar = ({ current = "Sales" }) => {
@@ -102,8 +109,8 @@ const Navbar = ({ current = "Sales" }) => {
                             alt=""
                           />
                         ) : (
-                          <div class="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                            <span class="font-medium text-gray-600 dark:text-gray-300">
+                          <div className="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                            <span className="font-medium text-gray-600 dark:text-gray-300">
                               {(user?.first_name + " " + user?.last_name)
                                 .split(" ")
                                 .map((n) => n[0])
@@ -220,8 +227,8 @@ const Navbar = ({ current = "Sales" }) => {
                       alt=""
                     />
                   ) : (
-                    <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                      <span class="font-medium text-gray-600 dark:text-gray-300">
+                    <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                      <span className="font-medium text-gray-600 dark:text-gray-300">
                         {(user?.first_name + " " + user?.last_name)
                           .split(" ")
                           .map((n) => n[0])

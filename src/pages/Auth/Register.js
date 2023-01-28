@@ -206,7 +206,7 @@ const Register = () => {
                 "Register Account"
               ) : (
                 <div
-                  class="w-5 h-5 rounded-full animate-spin
+                  className="w-5 h-5 rounded-full animate-spin
                     border-2 border-solid border-blue-500 border-t-transparent"
                 ></div>
               )}

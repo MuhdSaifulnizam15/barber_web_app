@@ -5,7 +5,7 @@ const path = (root, sublink) => {
 }
 
 const ROOTS_AUTH = '/auth';
-const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_ADMIN = '/admin';
 
 // ----------------------------------------------------------------------
 
@@ -33,35 +33,33 @@ export const PATH_PAGE = {
     history: '/transactions',
 };
 
-export const PATH_DASHBOARD = {
-    root: ROOTS_DASHBOARD,
+export const PATH_ADMIN = {
+    // root: ROOTS_ADMIN,
     service: {
-        root: path(ROOTS_DASHBOARD, '/services'),
-        list: path(ROOTS_DASHBOARD, '/services/list'),
-        newService: path(ROOTS_DASHBOARD, '/services/new'),
-        showById: path(ROOTS_DASHBOARD, '/services/detail'),
-        editById: path(ROOTS_DASHBOARD, `/services/edit`),
+        root: path(ROOTS_ADMIN, '/services'),
+        list: path(ROOTS_ADMIN, '/services/list'),
+        newService: path(ROOTS_ADMIN, '/services/new'),
+        showById: path(ROOTS_ADMIN, '/services/detail'),
+        editById: path(ROOTS_ADMIN, `/services/edit`),
     },
     category: {
-        root: path(ROOTS_DASHBOARD, '/category'),
-        list: path(ROOTS_DASHBOARD, '/category/list'),
-        newCategory: path(ROOTS_DASHBOARD, '/category/new'),
-        showById: path(ROOTS_DASHBOARD, '/category/detail'),
-        editById: path(ROOTS_DASHBOARD, `/category/edit`),
+        root: path(ROOTS_ADMIN, '/category'),
+        list: path(ROOTS_ADMIN, '/category/list'),
+        newCategory: path(ROOTS_ADMIN, '/category/new'),
+        showById: path(ROOTS_ADMIN, '/category/detail'),
+        editById: path(ROOTS_ADMIN, `/category/edit`),
     },
     user: {
-        root: path(ROOTS_DASHBOARD, '/user'),
-        list: path(ROOTS_DASHBOARD, '/user/list'),
-        newUser: path(ROOTS_DASHBOARD, '/user/new'),
-        showById: path(ROOTS_DASHBOARD, '/user/detail'),
-        editById: path(ROOTS_DASHBOARD, `/user/edit`),
-        profile: path(ROOTS_DASHBOARD, '/user/profile')
+        root: path(ROOTS_ADMIN, '/user'),
+        newUser: path(ROOTS_ADMIN, '/user/new'),
+        showById: path(ROOTS_ADMIN, '/user/detail'),
+        editById: path(ROOTS_ADMIN, `/user/edit`)
     },
     customer: {
-        root: path(ROOTS_DASHBOARD, '/customer'),
-        list: path(ROOTS_DASHBOARD, '/customer/list'),
-        newCustomer: path(ROOTS_DASHBOARD, '/customer/new'),
-        showById: path(ROOTS_DASHBOARD, '/customer/detail'),
-        editById: path(ROOTS_DASHBOARD, `/customer/edit`)
+        root: path(ROOTS_ADMIN, '/customer'),
+        list: path(ROOTS_ADMIN, '/customer/list'),
+        newCustomer: path(ROOTS_ADMIN, '/customer/new'),
+        showById: path(ROOTS_ADMIN, '/customer/detail'),
+        editById: path(ROOTS_ADMIN, `/customer/edit`)
     },
 }

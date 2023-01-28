@@ -18,7 +18,7 @@ const Loadable = (Component) => (props) => {
     <Suspense
       fallback={
         <div className="h-screen flex items-center justify-center">
-          <div class="w-20 h-20 rounded-full animate-spin border-6 border-solid border-blue-500 border-t-transparent" />
+          <div className="w-20 h-20 rounded-full animate-spin border-6 border-solid border-blue-500 border-t-transparent" />
         </div>
       }
     >
@@ -73,7 +73,8 @@ export default function Router() {
       // element: <RoleBasedGuard />,
       children: [
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
-        { path: "dashboard", element: <Dashboard /> },
+        // { path: "dashboard", element: <Dashboard /> },
+        { path: "user", element: <Users /> },
       ],
     },
 
@@ -143,12 +144,15 @@ const ForgotPassword = Loadable(
   lazy(() => import("pages/Auth/ForgotPassword"))
 );
 
-// Dashboard
-const Dashboard = Loadable(lazy(() => import("pages/Admin/Dashboard")));
+// Main
 const History = Loadable(lazy(() => import("pages/History")));
 const Profile = Loadable(lazy(() => import("pages/Profile")));
 const Sales = Loadable(lazy(() => import("pages/Sales")));
 const Transaction = Loadable(lazy(() => import("pages/Transaction")));
+
+// Admin
+const Dashboard = Loadable(lazy(() => import("pages/Admin/Dashboard")));
+const Users = Loadable(lazy(() => import("pages/Admin/User")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
