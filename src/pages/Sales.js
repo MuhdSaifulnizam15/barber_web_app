@@ -1,6 +1,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
+
 import axios from "utils/axios";
 
 import Navbar from "components/Navbar";
@@ -50,7 +51,11 @@ const Sales = () => {
   }, [selectedService]);
 
   useEffect(() => {
-    if (customerPhoneNumber && customerPhoneNumber.length > 9 && customerPhoneNumber.length < 12) {
+    if (
+      customerPhoneNumber &&
+      customerPhoneNumber.length > 9 &&
+      customerPhoneNumber.length < 12
+    ) {
       checkForTotalPoints();
     } else {
       setTotalPoints(0);

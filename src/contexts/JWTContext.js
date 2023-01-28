@@ -1,8 +1,9 @@
-import { createContext, useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
+import { createContext, useEffect, useReducer } from "react";
+import PropTypes from "prop-types";
 // utils
-import axios from '../utils/axios';
-import { isValidToken, setSession } from '../utils/jwt';
+import axios from "../utils/axios";
+import { isValidToken, setSession } from "../utils/jwt";
+import { toast } from "react-toastify";
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ const handlers = {
       ...state,
       isAuthenticated,
       isInitialized: true,
-      user
+      user,
     };
   },
   LOGIN: (state, action) => {
@@ -29,7 +30,7 @@ const handlers = {
     return {
       ...state,
       isAuthenticated: true,
-      user
+      user,
     };
   },
   REFRESH: (state, action) => {
@@ -44,13 +45,13 @@ const handlers = {
   LOGOUT: (state) => ({
     ...state,
     isAuthenticated: false,
-    user: null
+    user: null,
   }),
   REGISTER: (state, action) => {
     return {
       ...state,
       isAuthenticated: false,
-      user: null
+      user: null,
     };
   },
   FORGOT_PASSWORD: (state, action) => {
@@ -59,7 +60,7 @@ const handlers = {
     return {
       ...state,
       isAuthenticated: false,
-      user: null
+      user: null,
     };
   },
   RESET_PASSWORD: (state, action) => {
@@ -68,26 +69,27 @@ const handlers = {
     return {
       ...state,
       isAuthenticated: false,
-      user: null
+      user: null,
     };
-  }
+  },
 };
 
-const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
+const reducer = (state, action) =>
+  handlers[action.type] ? handlers[action.type](state, action) : state;
 
 const AuthContext = createContext({
   ...initialState,
-  method: 'jwt',
+  method: "jwt",
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   refresh: () => Promise.resolve(),
   registerUser: () => Promise.resolve(),
   forgotPassword: () => Promise.resolve(),
-  resetPassword: () => Promise.resolve()
+  resetPassword: () => Promise.resolve(),
 });
 
 AuthProvider.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 function AuthProvider({ children }) {
@@ -96,34 +98,35 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const accessToken = window.localStorage.getItem('accessToken');
-        const refreshToken = window.localStorage.getItem('refreshToken');
-        console.log('accessToken', accessToken, refreshToken);
+        const accessToken = window.localStorage.getItem("accessToken");
+        const refreshToken = window.localStorage.getItem("refreshToken");
+        console.log("accessToken", accessToken, refreshToken);
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
-          const response = await axios.get('/auth/profile');
-          console.log('getUserProfile response:', response);
+          const response = await axios.get("/auth/profile");
+          console.log("getUserProfile response:", response);
           const { user } = response.data;
 
           dispatch({
-            type: 'INITIALIZE',
+            type: "INITIALIZE",
             payload: {
               isAuthenticated: true,
-              user
-            }
+              user,
+            },
           });
-        } else if (refreshToken && isValidToken(refreshToken)){ // check if refreshToken exists, call refreshToken api
-          const response = await axios.post('/auth/refresh-tokens', {
-            refreshToken
+        } else if (refreshToken && isValidToken(refreshToken)) {
+          // check if refreshToken exists, call refreshToken api
+          const response = await axios.post("/auth/refresh-tokens", {
+            refreshToken,
           });
-          console.log('response refreshToken:', response);
+          console.log("response refreshToken:", response);
 
           setSession(response.data);
-      
-          const userProfileResponse = await axios.get('/auth/profile');
-          console.log('response getuserProfile:', userProfileResponse);
-      
+
+          const userProfileResponse = await axios.get("/auth/profile");
+          console.log("response getuserProfile:", userProfileResponse);
+
           const { user } = userProfileResponse.data;
 
           await dispatch({
@@ -131,26 +134,25 @@ function AuthProvider({ children }) {
             payload: {
               isAuthenticated: true,
               user,
-            }
+            },
           });
-          
         } else {
           dispatch({
-            type: 'INITIALIZE',
+            type: "INITIALIZE",
             payload: {
               isAuthenticated: false,
-              user: null
-            }
+              user: null,
+            },
           });
         }
       } catch (err) {
         console.error(err);
         dispatch({
-          type: 'INITIALIZE',
+          type: "INITIALIZE",
           payload: {
             isAuthenticated: false,
-            user: null
-          }
+            user: null,
+          },
         });
       }
     };
@@ -159,31 +161,44 @@ function AuthProvider({ children }) {
   }, []);
 
   const login = async ({ email, password }) => {
-    const response = await axios.post('/auth/login', {
+    const response = await axios.post("/auth/login", {
       email,
-      password
+      password,
     });
-    console.log('response login:', response);
+    console.log("response login:", response);
 
     const { tokens, user } = response.data;
 
     setSession(tokens);
     dispatch({
-      type: 'LOGIN',
+      type: "LOGIN",
       payload: {
-        user
-      }
+        user,
+      },
     });
+
+    if (tokens && user) {
+      toast.success("Login Success", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
   };
 
   const refresh = async (refreshToken) => {
-    const response = await axios.post('/auth/refresh-tokens', {
-      refreshToken
+    const response = await axios.post("/auth/refresh-tokens", {
+      refreshToken,
     });
-    console.log('response refreshToken:', response);
+    console.log("response refreshToken:", response);
 
-    const userProfileResponse = await axios.get('/auth/profile');
-    console.log('response getuserProfile:', userProfileResponse);
+    const userProfileResponse = await axios.get("/auth/profile");
+    console.log("response getuserProfile:", userProfileResponse);
 
     const { user } = userProfileResponse;
 
@@ -192,37 +207,50 @@ function AuthProvider({ children }) {
       type: "REFRESH",
       payload: {
         user,
-      }
+      },
     });
-  }
+  };
 
   const registerUser = async ({ email, password, first_name, last_name }) => {
-    const response = await axios.post('/auth/register', {
+    const response = await axios.post("/auth/register", {
       email,
       password,
       first_name,
-      last_name
+      last_name,
     });
-    console.log('res registerUser', response.data)
+    console.log("res registerUser", response.data);
 
     dispatch({
-      type: 'REGISTER'
+      type: "REGISTER",
     });
+
+    return response.data;
   };
 
   const logout = async () => {
     setSession(null);
-    dispatch({ type: 'LOGOUT' });
+    dispatch({ type: "LOGOUT" });
+
+    toast.success("Logout Success", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   const resetPassword = async (email) => {
-    console.log('reset Password', email);
-    dispatch({ type: 'RESET_PASSWORD' });
+    console.log("reset Password", email);
+    dispatch({ type: "RESET_PASSWORD" });
   };
 
   const forgotPassword = async (email) => {
-    console.log('forgot Password', email);
-    dispatch({ type: 'FORGOT_PASSWORD' });
+    console.log("forgot Password", email);
+    dispatch({ type: "FORGOT_PASSWORD" });
   };
 
   const updateProfile = () => {};
@@ -231,13 +259,13 @@ function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         ...state,
-        method: 'jwt',
+        method: "jwt",
         login,
         logout,
         registerUser,
         resetPassword,
         forgotPassword,
-        updateProfile
+        updateProfile,
       }}
     >
       {children}

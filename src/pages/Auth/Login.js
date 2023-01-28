@@ -1,25 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import useAuth from 'hooks/useAuth';
-import Spinner from 'components/Spinner'
+import useAuth from "hooks/useAuth";
+import Spinner from "components/Spinner";
 
 const Login = () => {
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, resetField } = useForm();
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const submitForm = async (data) => {
     try {
-      console.log('data', data);
+      setLoading(true);
+      console.log("data", data);
       await login(data);
     } catch (err) {
-      console.log('err', err);
+      console.log("err", err);
+      toast.error(`Login Failed. ${err.message}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      resetField("password");
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -54,6 +69,7 @@ const Login = () => {
                 autoComplete="email"
                 {...register("email")}
                 required
+                disabled={loading}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Email address"
               />
@@ -70,6 +86,7 @@ const Login = () => {
                 {...register("password")}
                 autoComplete="current-password"
                 required
+                disabled={loading}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Password"
               />
@@ -102,6 +119,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -119,7 +137,14 @@ const Login = () => {
                   />
                 </svg>
               </span>
-              Sign In
+              {!loading ? (
+                "Sign In"
+              ) : (
+                <div
+                  className="w-5 h-5 rounded-full animate-spin
+                    border-2 border-solid border-blue-500 border-t-transparent"
+                ></div>
+              )}
             </button>
           </div>
         </form>

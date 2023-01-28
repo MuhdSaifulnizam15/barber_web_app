@@ -1,25 +1,82 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import useAuth from 'hooks/useAuth';
-import Spinner from 'components/Spinner';
+import useAuth from "hooks/useAuth";
+import Spinner from "components/Spinner";
+
+import { PATH_AUTH } from "router/routes";
 
 const Register = () => {
-  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, resetField } = useForm();
   const navigate = useNavigate();
   const { registerUser } = useAuth();
 
-
   const submitForm = async (data) => {
-    // check if passwords match
-    if (data.password !== data.confirm_password) {
-      alert('Password mismatch');
+    try {
+      setLoading(true);
+      // check if passwords match
+      if (data.password !== data.confirm_password) {
+        toast.error(`Password mismatch`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        // reset input field
+        resetField("password");
+        resetField("confirm_password");
+
+        setLoading(false);
+      } else {
+        // transform email string to lowercase to avoid case sensitivity issues in login
+        data.email = data.email.toLowerCase();
+        console.log("data", data);
+        const res = await registerUser(data);
+
+        toast.success(`${res.message}`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setLoading(false);
+
+        navigate(PATH_AUTH.login);
+      }
+    } catch (err) {
+      console.log("err", err);
+      toast.error(`Registration Failed. ${err.message}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      setLoading(false);
+
+      // reset input field
+      resetField("first_name");
+      resetField("last_name");
+      resetField("email");
+      resetField("password");
+      resetField("confirm_password");
     }
-    // transform email string to lowercase to avoid case sensitivity issues in login
-    data.email = data.email.toLowerCase();
-    console.log('data', data);
-    await registerUser(data);
   };
 
   return (
@@ -53,7 +110,8 @@ const Register = () => {
                 name="fname"
                 type="text"
                 required
-                {...register('first_name')}
+                disabled={loading}
+                {...register("first_name")}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="First Name"
               />
@@ -68,7 +126,8 @@ const Register = () => {
                 name="lname"
                 type="text"
                 required
-                {...register('last_name')}
+                disabled={loading}
+                {...register("last_name")}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Last Name"
               />
@@ -83,7 +142,8 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                {...register('email')}
+                disabled={loading}
+                {...register("email")}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Email address"
               />
@@ -97,8 +157,9 @@ const Register = () => {
                 id="password"
                 name="password"
                 type="password"
+                disabled={loading}
                 required
-                {...register('password')}
+                {...register("password")}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Password"
               />
@@ -113,7 +174,8 @@ const Register = () => {
                 name="cpassword"
                 type="password"
                 required
-                {...register('confirm_password')}
+                disabled={loading}
+                {...register("confirm_password")}
                 className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
                 placeholder="Confirm Password"
               />
@@ -140,7 +202,14 @@ const Register = () => {
                   />
                 </svg>
               </span>
-              Register Account
+              {!loading ? (
+                "Register Account"
+              ) : (
+                <div
+                  class="w-5 h-5 rounded-full animate-spin
+                    border-2 border-solid border-blue-500 border-t-transparent"
+                ></div>
+              )}
             </button>
           </div>
         </form>
@@ -159,6 +228,6 @@ const Register = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Register;

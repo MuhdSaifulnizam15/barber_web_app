@@ -15,7 +15,13 @@ const Loadable = (Component) => (props) => {
   const isDashboard = pathname.includes("/admin");
 
   return (
-    <Suspense fallback={<div>Loading ....</div>}>
+    <Suspense
+      fallback={
+        <div className="h-screen flex items-center justify-center">
+          <div class="w-20 h-20 rounded-full animate-spin border-6 border-solid border-blue-500 border-t-transparent" />
+        </div>
+      }
+    >
       <Component {...props} />
     </Suspense>
   );
