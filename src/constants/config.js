@@ -7,10 +7,10 @@ const configuration = {
         apiUrl: 'http://localhost:3001/api/v1/',
     },
     dev: {
-        apiUrl: 'https://api.rolexbarbershop.com/api/v1/', // to be changed
+        apiUrl: 'http://localhost:3001/api/v1/', // dev env using local endpoint
     },
     prod: {
-        apiUrl: 'https://test-api.rolexbarbershop.com/api/v1/', // to be changed
+        apiUrl: 'https://api.rolexbarbershop.com/api/v1/',
     }
 };
 

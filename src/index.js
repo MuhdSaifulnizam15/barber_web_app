@@ -11,6 +11,9 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { store } from "redux/store";
 import { AuthProvider } from "contexts/JWTContext";
+import config from "constants/config";
+
+if (config.IS_PROD) console.log = () => {};
 
 ReactDOM.render(
   <Provider store={store}>
