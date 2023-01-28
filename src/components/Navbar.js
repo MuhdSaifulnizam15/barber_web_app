@@ -1,16 +1,10 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+
 import useAuth from "hooks/useAuth";
 
 import { classNames } from "utils/helper";
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
 
 const userNavigation = [
   { name: "Your Profile", href: "/profile" },
@@ -35,8 +29,9 @@ const navigation = [
 ];
 
 const Navbar = ({ current = "Sales" }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
+  console.log("user", user);
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -53,23 +48,43 @@ const Navbar = ({ current = "Sales" }) => {
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
-                    {navigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.name === current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "px-3 py-2 rounded-md text-sm font-medium"
-                        )}
-                        aria-current={
-                          item.name === current ? "page" : undefined
-                        }
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                    {navigation.map((item) =>
+                      item.isAdmin ? (
+                        user?.role == "admin" && (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            className={classNames(
+                              item.name === current
+                                ? "bg-gray-900 text-white"
+                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                              "px-3 py-2 rounded-md text-sm font-medium"
+                            )}
+                            aria-current={
+                              item.name === current ? "page" : undefined
+                            }
+                          >
+                            {item.name}
+                          </a>
+                        )
+                      ) : (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className={classNames(
+                            item.name === current
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                            "px-3 py-2 rounded-md text-sm font-medium"
+                          )}
+                          aria-current={
+                            item.name === current ? "page" : undefined
+                          }
+                        >
+                          {item.name}
+                        </a>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -80,11 +95,23 @@ const Navbar = ({ current = "Sales" }) => {
                     <div>
                       <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="sr-only">Open user menu</span>
-                        <img
-                          className="h-8 w-8 rounded-full"
-                          src={user.imageUrl}
-                          alt=""
-                        />
+                        {user?.imageUrl ? (
+                          <img
+                            className="h-8 w-8 rounded-full"
+                            src={user.imageUrl}
+                            alt=""
+                          />
+                        ) : (
+                          <div class="relative inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                            <span class="font-medium text-gray-600 dark:text-gray-300">
+                              {(user?.first_name + " " + user?.last_name)
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                                .substring(0, 2)}
+                            </span>
+                          </div>
+                        )}
                       </Menu.Button>
                     </div>
                     <Transition
@@ -147,35 +174,66 @@ const Navbar = ({ current = "Sales" }) => {
 
           <Disclosure.Panel className="md:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-              {navigation.map((item) => (
-                <Disclosure.Button
-                  key={item.name}
-                  as="a"
-                  href={item.href}
-                  className={classNames(
-                    item.name === current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block px-3 py-2 rounded-md text-base font-medium"
-                  )}
-                  aria-current={item.name === current ? "page" : undefined}
-                >
-                  {item.name}
-                </Disclosure.Button>
-              ))}
+              {navigation.map((item) =>
+                item.isAdmin ? (
+                  user?.role == "admin" && (
+                    <Disclosure.Button
+                      key={item.name}
+                      as="a"
+                      href={item.href}
+                      className={classNames(
+                        item.name === current
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        "block px-3 py-2 rounded-md text-base font-medium"
+                      )}
+                      aria-current={item.name === current ? "page" : undefined}
+                    >
+                      {item.name}
+                    </Disclosure.Button>
+                  )
+                ) : (
+                  <Disclosure.Button
+                    key={item.name}
+                    as="a"
+                    href={item.href}
+                    className={classNames(
+                      item.name === current
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                      "block px-3 py-2 rounded-md text-base font-medium"
+                    )}
+                    aria-current={item.name === current ? "page" : undefined}
+                  >
+                    {item.name}
+                  </Disclosure.Button>
+                )
+              )}
             </div>
             <div className="border-t border-gray-700 pt-4 pb-3">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
-                    alt=""
-                  />
+                  {user?.imageUrl ? (
+                    <img
+                      className="h-10 w-10 rounded-full"
+                      src={user.imageUrl}
+                      alt=""
+                    />
+                  ) : (
+                    <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                      <span class="font-medium text-gray-600 dark:text-gray-300">
+                        {(user?.first_name + " " + user?.last_name)
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .substring(0, 2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
-                    {user.name}
+                    {user.first_name + " " + user.last_name}
                   </div>
                   <div className="text-sm font-medium leading-none text-gray-400">
                     {user.email}
