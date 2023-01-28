@@ -1,27 +1,40 @@
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "redux/store";
+import { Listbox, Transition } from "@headlessui/react";
+import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 
 import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 import Header from "components/Header";
 
-import { getAllCategories } from "redux/slices/category";
-import {
-  addCategory,
-  deleteCategory,
-  updateCategory,
-} from "redux/slices/category";
+import { classNames } from "utils/helper";
 
-const Category = () => {
+import {
+  getAllServices,
+  addService,
+  deleteService,
+  updateService,
+} from "redux/slices/services";
+import { getAllCategories } from "redux/slices/category";
+
+const Services = () => {
   const [showModal, setShowModal] = useState(false);
+  const [viewMode, setViewMode] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [selectedItem, setSelectedItem] = useState();
+  const [selectedCategory, setSelectedCategory] = useState();
   const [name, setName] = useState();
-  const { categories, isLoading } = useSelector((state) => state.category);
+  const [price, setPrice] = useState();
+  const { services, isLoading } = useSelector((state) => state.services);
+  const { categories } = useSelector((state) => state.category);
   const dispatch = useDispatch();
 
   useEffect(async () => {
     await dispatch(getAllCategories());
+  }, []);
+
+  useEffect(async () => {
+    await dispatch(getAllServices());
   }, [dispatch]);
 
   useEffect(() => {
@@ -36,8 +49,15 @@ const Category = () => {
   const handleEventChange = (event) => {
     console.log("event", event.target.name);
     switch (event.target.name) {
-      case "category_name":
+      case "service_name":
         setName(event.target.value);
+        break;
+
+      case "service_price":
+        const validated = event.target.value.match(/^(\d*\.{0,1}\d{0,2}$)/);
+        if (validated) {
+          setPrice(event.target.value);
+        }
         break;
 
       default:
@@ -47,36 +67,44 @@ const Category = () => {
 
   const resetForm = () => {
     console.log("resetForm");
-    setName(null);
-    setSelected(null);
+    setName();
+    setPrice();
+    setViewMode(false);
+    setSelectedItem();
+    setSelectedCategory();
     setShowModal(false);
   };
 
   const submitForm = async (event) => {
     event.preventDefault();
-    const data = {
-      name,
-    };
+    if (name && price && selectedCategory) {
+      const data = {
+        name,
+        price,
+        category_id: selectedCategory?.id,
+      };
 
-    if (selected) await dispatch(updateCategory(selected?.id, data));
-    else await dispatch(addCategory(data));
-    await dispatch(getAllCategories());
+      console.log("data", data);
+      if (selectedItem) await dispatch(updateService(selectedItem?.id, data));
+      else await dispatch(addService(data));
+      await dispatch(getAllServices());
+    }
   };
 
-  const submitCategoryDeletion = async (id) => {
+  const submitServiceDeletion = async (id) => {
     console.log(id);
-    await dispatch(deleteCategory(id));
-    await dispatch(getAllCategories());
+    await dispatch(deleteService(id));
+    await dispatch(getAllServices());
     setShowDeleteModal(false);
-    setSelected(null);
+    setSelectedItem();
   };
 
   return (
     <div>
       <div className="min-h-full">
-        <Navbar current="Categories" />
+        <Navbar current="Services" />
 
-        <Header title="Categories" />
+        <Header title="Services" />
         <main>
           <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             <div className="flex justify-end mr-2">
@@ -85,7 +113,7 @@ const Category = () => {
                 onClick={() => setShowModal(true)}
                 className="justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                Add Category
+                Add Service
               </button>
             </div>
 
@@ -96,7 +124,11 @@ const Category = () => {
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                       <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                         <h3 className="text-3xl font-semibold">
-                          {selected ? "Edit Category" : "Add Category"}
+                          {viewMode
+                            ? "Service Detail"
+                            : selectedItem
+                            ? "Edit Service"
+                            : "Add Service"}
                         </h3>
                         <button
                           className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
@@ -118,23 +150,144 @@ const Category = () => {
                           </svg>
                         </button>
                       </div>
+
                       <div className="relative p-6 flex-auto">
                         <label
                           htmlFor="price"
                           className="block text-sm font-medium text-gray-700 mb-2"
                         >
-                          Category Name
+                          Service Name
                         </label>
                         <input
                           type="text"
-                          name="category_name"
-                          id="category_name"
+                          name="service_name"
+                          id="service_name"
+                          disabled={viewMode}
                           className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
-                          placeholder="Enter Category Name"
+                          placeholder="Enter Service Name"
                           onChange={handleEventChange}
                           value={name}
                         />
                       </div>
+
+                      <div className="relative px-6 pb-6 flex-auto">
+                        <label
+                          htmlFor="price"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                          Service Price
+                        </label>
+                        <input
+                          type="number"
+                          name="service_price"
+                          id="service_price"
+                          disabled={viewMode}
+                          className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                          placeholder="Enter Service Price"
+                          onChange={handleEventChange}
+                          value={price}
+                        />
+                      </div>
+
+                      <div className="relative px-6 pb-10 flex-auto">
+                        <Listbox
+                          value={selectedCategory}
+                          disabled={viewMode}
+                          onChange={setSelectedCategory}
+                        >
+                          {({ open }) => (
+                            <>
+                              <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                Category
+                              </Listbox.Label>
+                              <div className="relative mt-1">
+                                <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                                  <span className="flex items-center">
+                                    <span
+                                      className="ml-3 block truncate text-gray-700"
+                                      style={
+                                        !selectedCategory?.name
+                                          ? { color: "red" }
+                                          : { color: "black" }
+                                      }
+                                    >
+                                      {selectedCategory?.name
+                                        ? selectedCategory.name
+                                        : "Select Category"}
+                                    </span>
+                                  </span>
+                                  <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                    <ChevronUpDownIcon
+                                      className="h-5 w-5 text-gray-400"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                </Listbox.Button>
+
+                                <Transition
+                                  show={open}
+                                  as={Fragment}
+                                  leave="transition ease-in duration-100"
+                                  leaveFrom="opacity-100"
+                                  leaveTo="opacity-0"
+                                >
+                                  <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    {categories.docs &&
+                                      categories.docs.map((item) => (
+                                        <Listbox.Option
+                                          key={item.id}
+                                          className={({ active }) =>
+                                            classNames(
+                                              active
+                                                ? "text-white bg-indigo-600"
+                                                : "text-gray-900",
+                                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                                            )
+                                          }
+                                          value={item}
+                                        >
+                                          {({ selected, active }) => (
+                                            <>
+                                              <div className="flex items-center">
+                                                <span
+                                                  className={classNames(
+                                                    selected
+                                                      ? "font-semibold"
+                                                      : "font-normal",
+                                                    "ml-3 block truncate"
+                                                  )}
+                                                >
+                                                  {item.name}
+                                                </span>
+                                              </div>
+
+                                              {selected ? (
+                                                <span
+                                                  className={classNames(
+                                                    active
+                                                      ? "text-white"
+                                                      : "text-indigo-600",
+                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                  )}
+                                                >
+                                                  <CheckIcon
+                                                    className="h-5 w-5"
+                                                    aria-hidden="true"
+                                                  />
+                                                </span>
+                                              ) : null}
+                                            </>
+                                          )}
+                                        </Listbox.Option>
+                                      ))}
+                                  </Listbox.Options>
+                                </Transition>
+                              </div>
+                            </>
+                          )}
+                        </Listbox>
+                      </div>
+
                       <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
                         <button
                           className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
@@ -143,21 +296,23 @@ const Category = () => {
                         >
                           Close
                         </button>
-                        <button
-                          className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
-                          onClick={submitForm}
-                        >
-                          {!isLoading ? (
-                            selected ? (
-                              "Update"
+                        {!viewMode ? (
+                          <button
+                            className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                            type="button"
+                            onClick={submitForm}
+                          >
+                            {!isLoading ? (
+                              selectedItem ? (
+                                "Update"
+                              ) : (
+                                "Create"
+                              )
                             ) : (
-                              "Create"
-                            )
-                          ) : (
-                            <div className="w-5 h-5 rounded-full animate-spin border-2 border-solid border-blue-500 border-t-transparent" />
-                          )}
-                        </button>
+                              <div className="w-5 h-5 rounded-full animate-spin border-2 border-solid border-blue-500 border-t-transparent" />
+                            )}
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -173,7 +328,7 @@ const Category = () => {
                     className="fixed inset-0 w-full h-full bg-black opacity-40"
                     onClick={() => {
                       setShowDeleteModal(false);
-                      setSelected(null);
+                      setSelectedItem();
                     }}
                   ></div>
                   <div className="flex items-center min-h-screen px-4 py-8">
@@ -195,18 +350,18 @@ const Category = () => {
                         </div>
                         <div className="mt-2 text-center sm:ml-4 sm:text-left">
                           <h4 className="text-lg font-medium text-gray-800">
-                            Delete category ?
+                            Delete service ?
                           </h4>
                           <p className="mt-2 text-[15px] leading-relaxed text-gray-500">
-                            Are you sure you want to delete this category? Any
-                            services associated to this category would also be
-                            deleted.
+                            Are you sure you want to delete this servicesData?
+                            Any services associated to this servicesData would
+                            also be deleted.
                           </p>
                           <div className="items-center gap-2 mt-3 sm:flex">
                             <button
                               className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md outline-none ring-offset-2 ring-red-600 focus:ring-2"
                               onClick={() =>
-                                submitCategoryDeletion(selected?.id)
+                                submitServiceDeletion(selectedItem?.id)
                               }
                             >
                               Delete
@@ -215,7 +370,7 @@ const Category = () => {
                               className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md outline-none border ring-offset-2 ring-indigo-600 focus:ring-2"
                               onClick={() => {
                                 setShowDeleteModal(false);
-                                setSelected(null);
+                                setSelectedItem();
                               }}
                             >
                               Cancel
@@ -245,8 +400,8 @@ const Category = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white">
-                        {categories.docs ? (
-                          categories.docs.map((item) => (
+                        {services.docs ? (
+                          services.docs.map((item) => (
                             <tr key={item.id}>
                               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                                 <div className="flex items-center">
@@ -257,10 +412,18 @@ const Category = () => {
                               </td>
 
                               <td className="flex flex-row justify-center items-center px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
-                                {/* <button
+                                <button
                                   type="button"
                                   className="w-7 h-7 hover:text-yellow-300 mx-2"
-                                  onClick={() => console.log("view user")}
+                                  onClick={() => {
+                                    setShowModal(true);
+                                    setSelectedItem(item);
+                                    console.log("item", item?.category_id);
+                                    setSelectedCategory(item?.category_id);
+                                    setViewMode(true);
+                                    setPrice(item?.price);
+                                    setName(item?.name);
+                                  }}
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -280,14 +443,17 @@ const Category = () => {
                                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                                     />
                                   </svg>
-                                </button> */}
+                                </button>
 
                                 <button
                                   type="button"
                                   className="w-7 h-7 hover:text-blue-300 mx-2"
                                   onClick={() => {
                                     setShowModal(true);
-                                    setSelected(item);
+                                    setSelectedItem(item);
+                                    console.log("item", item?.category_id);
+                                    setSelectedCategory(item?.category_id);
+                                    setPrice(item?.price);
                                     setName(item?.name);
                                   }}
                                 >
@@ -311,7 +477,7 @@ const Category = () => {
                                   className="w-7 h-7 hover:text-red-300 mx-2"
                                   onClick={() => {
                                     setShowDeleteModal(true);
-                                    setSelected(item);
+                                    setSelectedItem(item);
                                   }}
                                 >
                                   <svg
@@ -334,7 +500,7 @@ const Category = () => {
                         ) : (
                           <tr>
                             <td className="text-center py-2">
-                              No category found
+                              No service found
                             </td>
                           </tr>
                         )}
@@ -353,4 +519,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Services;

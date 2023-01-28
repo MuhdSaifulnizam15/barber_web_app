@@ -64,7 +64,7 @@ export function getAllCategories() {
     try {
       const response = await axios.get("/categories");
       console.log("response", response.data);
-      dispatch(slice.actions.getAllCustomerSuccess(response.data.result.docs));
+      dispatch(slice.actions.getAllCustomerSuccess(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

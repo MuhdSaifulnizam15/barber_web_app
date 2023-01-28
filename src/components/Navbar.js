@@ -39,12 +39,17 @@ const navigation = [
     current: false,
     isAdmin: true,
   },
+  {
+    name: "Services",
+    href: PATH_ADMIN.service.root,
+    current: false,
+    isAdmin: true,
+  },
 ];
 
 const Navbar = ({ current = "Sales" }) => {
   const { logout, user } = useAuth();
-
-  console.log("user", user);
+  
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
