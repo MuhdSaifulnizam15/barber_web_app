@@ -27,9 +27,15 @@ const navigation = [
   //   current: false,
   //   isAdmin: true,
   // },
+  // {
+  //   name: "Users",
+  //   href: PATH_ADMIN.user.root,
+  //   current: false,
+  //   isAdmin: true,
+  // },
   {
-    name: "Users",
-    href: PATH_ADMIN.user.root,
+    name: "Categories",
+    href: PATH_ADMIN.category.root,
     current: false,
     isAdmin: true,
   },

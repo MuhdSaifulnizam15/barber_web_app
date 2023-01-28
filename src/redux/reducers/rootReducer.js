@@ -6,6 +6,7 @@ import branchReducer from "redux/slices/branch";
 import staffReducer from "redux/slices/staff";
 import servicesReducer from "redux/slices/services";
 import customerReducer from "redux/slices/customer";
+import categoryReducer from "redux/slices/category";
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   staff: staffReducer,
   services: servicesReducer,
   customer: customerReducer,
+  category: categoryReducer,
 });
 
 export { rootPersistConfig, rootReducer };

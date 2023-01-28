@@ -75,6 +75,7 @@ export default function Router() {
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
         // { path: "dashboard", element: <Dashboard /> },
         { path: "user", element: <Users /> },
+        { path: "category", element: <Categories /> },
       ],
     },
 
@@ -153,6 +154,7 @@ const Transaction = Loadable(lazy(() => import("pages/Transaction")));
 // Admin
 const Dashboard = Loadable(lazy(() => import("pages/Admin/Dashboard")));
 const Users = Loadable(lazy(() => import("pages/Admin/User")));
+const Categories = Loadable(lazy(() => import("pages/Admin/Category")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
