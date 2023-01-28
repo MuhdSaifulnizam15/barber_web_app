@@ -4,7 +4,8 @@ import axios from 'axios';
 
 // Set config defaults when creating the instance
 const axiosInstance = axios.create({
-  baseURL: 'https://api.rolexbarbershop.com/api/v1',
+  // baseURL: 'https://api.rolexbarbershop.com/api/v1',
+  baseURL: 'http://localhost:3001/api/v1',
   
 });
 
