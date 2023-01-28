@@ -49,11 +49,19 @@ export const PATH_ADMIN = {
         showById: path(ROOTS_ADMIN, '/category/detail'),
         editById: path(ROOTS_ADMIN, `/category/edit`),
     },
-    user: {
-        root: path(ROOTS_ADMIN, '/user'),
-        newUser: path(ROOTS_ADMIN, '/user/new'),
-        showById: path(ROOTS_ADMIN, '/user/detail'),
-        editById: path(ROOTS_ADMIN, `/user/edit`)
+    branch: {
+        root: path(ROOTS_ADMIN, '/branch'),
+        list: path(ROOTS_ADMIN, '/branch/list'),
+        newCategory: path(ROOTS_ADMIN, '/branch/new'),
+        showById: path(ROOTS_ADMIN, '/branch/detail'),
+        editById: path(ROOTS_ADMIN, `/branch/edit`),
+    },
+    staff: {
+        root: path(ROOTS_ADMIN, '/staff'),
+        list: path(ROOTS_ADMIN, '/staff/list'),
+        newCategory: path(ROOTS_ADMIN, '/staff/new'),
+        showById: path(ROOTS_ADMIN, '/staff/detail'),
+        editById: path(ROOTS_ADMIN, `/staff/edit`),
     },
     customer: {
         root: path(ROOTS_ADMIN, '/customer'),
@@ -61,5 +69,11 @@ export const PATH_ADMIN = {
         newCustomer: path(ROOTS_ADMIN, '/customer/new'),
         showById: path(ROOTS_ADMIN, '/customer/detail'),
         editById: path(ROOTS_ADMIN, `/customer/edit`)
+    },
+    user: {
+        root: path(ROOTS_ADMIN, '/user'),
+        newUser: path(ROOTS_ADMIN, '/user/new'),
+        showById: path(ROOTS_ADMIN, '/user/detail'),
+        editById: path(ROOTS_ADMIN, `/user/edit`)
     },
 }

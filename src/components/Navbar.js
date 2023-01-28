@@ -34,6 +34,12 @@ const navigation = [
   //   isAdmin: true,
   // },
   {
+    name: "Branch",
+    href: PATH_ADMIN.branch.root,
+    current: false,
+    isAdmin: true,
+  },
+  {
     name: "Categories",
     href: PATH_ADMIN.category.root,
     current: false,
