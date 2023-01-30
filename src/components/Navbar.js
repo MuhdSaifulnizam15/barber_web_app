@@ -29,7 +29,7 @@ const navigation = [
   // },
   // {
   //   name: "Users",
-  //   href: PATH_ADMIN.user.root,
+  //   href: PATH_ADMIN.user?.root,
   //   current: false,
   //   isAdmin: true,
   // },
@@ -51,11 +51,23 @@ const navigation = [
     current: false,
     isAdmin: true,
   },
+  {
+    name: "Staff",
+    href: PATH_ADMIN.staff.root,
+    current: false,
+    isAdmin: true,
+  },
+  {
+    name: "Customer",
+    href: PATH_ADMIN.customer.root,
+    current: false,
+    isAdmin: true,
+  },
 ];
 
 const Navbar = ({ current = "Sales" }) => {
   const { logout, user } = useAuth();
-  
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -82,11 +94,14 @@ const Navbar = ({ current = "Sales" }) => {
                               item.name === current
                                 ? "bg-gray-900 text-white"
                                 : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                              "px-3 py-2 rounded-md text-sm font-medium"
+                              "px-3 py-2 rounded-md text-sm font-medium disabled"
                             )}
                             aria-current={
                               item.name === current ? "page" : undefined
                             }
+                            onClick={(e) => {
+                              if (item.name === current) e.preventDefault();
+                            }}
                           >
                             {item.name}
                           </a>
@@ -104,6 +119,9 @@ const Navbar = ({ current = "Sales" }) => {
                           aria-current={
                             item.name === current ? "page" : undefined
                           }
+                          onClick={(e) => {
+                            if (item.name === current) e.preventDefault();
+                          }}
                         >
                           {item.name}
                         </a>
@@ -122,7 +140,7 @@ const Navbar = ({ current = "Sales" }) => {
                         {user?.imageUrl ? (
                           <img
                             className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
+                            src={user?.imageUrl}
                             alt=""
                           />
                         ) : (
@@ -240,7 +258,7 @@ const Navbar = ({ current = "Sales" }) => {
                   {user?.imageUrl ? (
                     <img
                       className="h-10 w-10 rounded-full"
-                      src={user.imageUrl}
+                      src={user?.imageUrl}
                       alt=""
                     />
                   ) : (
@@ -257,10 +275,10 @@ const Navbar = ({ current = "Sales" }) => {
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
-                    {user.first_name + " " + user.last_name}
+                    {user?.first_name + " " + user?.last_name}
                   </div>
                   <div className="text-sm font-medium leading-none text-gray-400">
-                    {user.email}
+                    {user?.email}
                   </div>
                 </div>
               </div>

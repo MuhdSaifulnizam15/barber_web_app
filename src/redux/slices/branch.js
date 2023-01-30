@@ -34,7 +34,7 @@ const slice = createSlice({
       state.branch = action.payload;
     },
 
-        // ADD BRANCH
+    // ADD BRANCH
     addBranchSuccess(state, action) {
       state.isLoading = false;
     },
@@ -63,7 +63,7 @@ export function getAllBranch() {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get("/branches");
-      console.log('response', response.data);
+      console.log("response", response.data);
       dispatch(slice.actions.getBranchSuccess(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
