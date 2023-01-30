@@ -114,6 +114,14 @@ export default function Router() {
             </AuthGuard>
           ),
         },
+        {
+          path: "customer",
+          element: (
+            <AuthGuard>
+              <Customer />
+            </AuthGuard>
+          ),
+        },
       ],
     },
 
@@ -196,6 +204,7 @@ const Categories = Loadable(lazy(() => import("pages/Admin/Category")));
 const Services = Loadable(lazy(() => import("pages/Admin/Service")));
 const Branch = Loadable(lazy(() => import("pages/Admin/Branch")));
 const Staff = Loadable(lazy(() => import("pages/Admin/Staff")));
+const Customer = Loadable(lazy(() => import("pages/Admin/Customer")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
