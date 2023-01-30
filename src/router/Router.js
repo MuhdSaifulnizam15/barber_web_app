@@ -74,10 +74,54 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
         // { path: "dashboard", element: <Dashboard /> },
-        { path: "user", element: <Users /> },
-        { path: "category", element: <Categories /> },
-        { path: "services", element: <Services /> },
-        { path: "branch", element: <Branch /> },
+        {
+          path: "user",
+          element: (
+            <AuthGuard>
+              <Users />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "category",
+          element: (
+            <AuthGuard>
+              <Categories />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "services",
+          element: (
+            <AuthGuard>
+              <Services />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "branch",
+          element: (
+            <AuthGuard>
+              <Branch />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "staff",
+          element: (
+            <AuthGuard>
+              <Staff />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "customer",
+          element: (
+            <AuthGuard>
+              <Customer />
+            </AuthGuard>
+          ),
+        },
       ],
     },
 
@@ -159,6 +203,8 @@ const Users = Loadable(lazy(() => import("pages/Admin/User")));
 const Categories = Loadable(lazy(() => import("pages/Admin/Category")));
 const Services = Loadable(lazy(() => import("pages/Admin/Service")));
 const Branch = Loadable(lazy(() => import("pages/Admin/Branch")));
+const Staff = Loadable(lazy(() => import("pages/Admin/Staff")));
+const Customer = Loadable(lazy(() => import("pages/Admin/Customer")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
