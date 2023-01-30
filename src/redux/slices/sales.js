@@ -1,5 +1,7 @@
 import { map, filter } from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+
 // utils
 import axios from "utils/axios";
 
@@ -66,6 +68,17 @@ export function addSales(data) {
       const response = await axios.post("/sales", data);
       console.log('response', response.data);
       dispatch(slice.actions.addSalesSuccess(response.data.sale));
+
+      toast.success("Sales successfully added", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     } catch (error) {
       console.log(error)
       dispatch(slice.actions.hasError(error));

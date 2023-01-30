@@ -151,23 +151,41 @@ const Sales = () => {
     setCustomerPhoneNum("");
   };
 
-  const submitForm = (event) => {
+  const submitForm = async (event) => {
     event.preventDefault();
-    const data = {
-      branch_id: selectedBranch.id,
-      barber_id: selectedStaff.id,
-      customer_id: selectedCustomer.id,
-      order: selectedService.map((serv) => ({
-        service: serv.id,
-        quantity: serv.quantity,
-      })),
-      total: total,
-      total_redeemed_point: redeemedPoint,
-      total_rewarded_point: rewardedPoint,
-    };
+    let data;
+    if (customer) {
+      data = {
+        branch_id: selectedBranch.id,
+        barber_id: selectedStaff.id,
+        customer_id: selectedCustomer.id,
+        order: selectedService.map((serv) => ({
+          service: serv.id,
+          quantity: serv.quantity,
+        })),
+        total: total,
+        total_redeemed_point: redeemedPoint,
+        total_rewarded_point: rewardedPoint,
+      };
+    } else {
+      data = {
+        branch_id: selectedBranch.id,
+        barber_id: selectedStaff.id,
+        order: selectedService.map((serv) => ({
+          service: serv.id,
+          quantity: serv.quantity,
+        })),
+        total: total,
+        total_redeemed_point: redeemedPoint,
+        total_rewarded_point: rewardedPoint,
+        customer_name: customerName,
+        customer_phone_no: customerPhoneNumber,
+      };
+    }
 
     console.log("data", data);
-    dispatch(addSales(data));
+    await dispatch(addSales(data));
+     resetForm();
   };
 
   return (
