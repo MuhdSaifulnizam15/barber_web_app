@@ -74,11 +74,46 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
         // { path: "dashboard", element: <Dashboard /> },
-        { path: "user", element: <Users /> },
-        { path: "category", element: <Categories /> },
-        { path: "services", element: <Services /> },
-        { path: "branch", element: <Branch /> },
-        { path: "staff", element: <Staff /> },
+        {
+          path: "user",
+          element: (
+            <AuthGuard>
+              <Users />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "category",
+          element: (
+            <AuthGuard>
+              <Categories />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "services",
+          element: (
+            <AuthGuard>
+              <Services />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "branch",
+          element: (
+            <AuthGuard>
+              <Branch />
+            </AuthGuard>
+          ),
+        },
+        {
+          path: "staff",
+          element: (
+            <AuthGuard>
+              <Staff />
+            </AuthGuard>
+          ),
+        },
       ],
     },
 

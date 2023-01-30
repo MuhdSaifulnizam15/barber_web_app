@@ -29,7 +29,7 @@ const navigation = [
   // },
   // {
   //   name: "Users",
-  //   href: PATH_ADMIN.user.root,
+  //   href: PATH_ADMIN.user?.root,
   //   current: false,
   //   isAdmin: true,
   // },
@@ -134,7 +134,7 @@ const Navbar = ({ current = "Sales" }) => {
                         {user?.imageUrl ? (
                           <img
                             className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
+                            src={user?.imageUrl}
                             alt=""
                           />
                         ) : (
@@ -252,7 +252,7 @@ const Navbar = ({ current = "Sales" }) => {
                   {user?.imageUrl ? (
                     <img
                       className="h-10 w-10 rounded-full"
-                      src={user.imageUrl}
+                      src={user?.imageUrl}
                       alt=""
                     />
                   ) : (
@@ -269,10 +269,10 @@ const Navbar = ({ current = "Sales" }) => {
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
-                    {user.first_name + " " + user.last_name}
+                    {user?.first_name + " " + user?.last_name}
                   </div>
                   <div className="text-sm font-medium leading-none text-gray-400">
-                    {user.email}
+                    {user?.email}
                   </div>
                 </div>
               </div>
