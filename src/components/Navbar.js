@@ -51,6 +51,12 @@ const navigation = [
     current: false,
     isAdmin: true,
   },
+    {
+    name: "Staff",
+    href: PATH_ADMIN.staff.root,
+    current: false,
+    isAdmin: true,
+  },
 ];
 
 const Navbar = ({ current = "Sales" }) => {

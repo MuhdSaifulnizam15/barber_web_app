@@ -78,6 +78,7 @@ export default function Router() {
         { path: "category", element: <Categories /> },
         { path: "services", element: <Services /> },
         { path: "branch", element: <Branch /> },
+        { path: "staff", element: <Staff /> },
       ],
     },
 
@@ -159,6 +160,7 @@ const Users = Loadable(lazy(() => import("pages/Admin/User")));
 const Categories = Loadable(lazy(() => import("pages/Admin/Category")));
 const Services = Loadable(lazy(() => import("pages/Admin/Service")));
 const Branch = Loadable(lazy(() => import("pages/Admin/Branch")));
+const Staff = Loadable(lazy(() => import("pages/Admin/Staff")));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
