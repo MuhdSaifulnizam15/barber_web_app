@@ -51,7 +51,7 @@ const navigation = [
     current: false,
     isAdmin: true,
   },
-    {
+  {
     name: "Staff",
     href: PATH_ADMIN.staff.root,
     current: false,
@@ -61,7 +61,7 @@ const navigation = [
 
 const Navbar = ({ current = "Sales" }) => {
   const { logout, user } = useAuth();
-  
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -88,11 +88,14 @@ const Navbar = ({ current = "Sales" }) => {
                               item.name === current
                                 ? "bg-gray-900 text-white"
                                 : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                              "px-3 py-2 rounded-md text-sm font-medium"
+                              "px-3 py-2 rounded-md text-sm font-medium disabled"
                             )}
                             aria-current={
                               item.name === current ? "page" : undefined
                             }
+                            onClick={(e) => {
+                              if (item.name === current) e.preventDefault();
+                            }}
                           >
                             {item.name}
                           </a>
@@ -110,6 +113,9 @@ const Navbar = ({ current = "Sales" }) => {
                           aria-current={
                             item.name === current ? "page" : undefined
                           }
+                          onClick={(e) => {
+                            if (item.name === current) e.preventDefault();
+                          }}
                         >
                           {item.name}
                         </a>
