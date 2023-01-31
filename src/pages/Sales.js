@@ -32,6 +32,7 @@ const Sales = () => {
   const [rewardedPoint, setRewardedPoint] = useState(0);
   const [redeemedPoint, setRedeemedPoint] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [showRedeemPointField, setShowRedeemPointField] = useState(false);
   const [customerName, setCustomerName] = useState();
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
 
@@ -49,6 +50,15 @@ const Sales = () => {
     setTotal(newTotal);
     setRewardedPoint(Math.ceil(newTotal));
   }, [selectedService]);
+
+  useEffect(() => {
+    if (totalPoints > 0) {
+      setShowRedeemPointField(true);
+    } else {
+      setShowRedeemPointField(false);
+      setRedeemedPoint(0)
+    }
+  }, [totalPoints]);
 
   useEffect(() => {
     if (
@@ -135,6 +145,10 @@ const Sales = () => {
         setCustomerName(event.target.value);
         break;
 
+      case "redeem_point":
+        setRedeemedPoint(event.target.value);
+        break;
+        
       default:
         break;
     }
@@ -185,7 +199,7 @@ const Sales = () => {
 
     console.log("data", data);
     await dispatch(addSales(data));
-     resetForm();
+    resetForm();
   };
 
   return (
@@ -545,6 +559,25 @@ const Sales = () => {
                           <label className="block mt-3 text-gray-700 text-right text-sm">
                             {"Total Points Collected: " + totalPoints}
                           </label>
+                        </div>
+
+                        <div className="col-span-6 sm:col-span-4">
+                          <label
+                            htmlFor="price"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Redeem Point
+                          </label>
+                          <input
+                            type="number"
+                            name="redeem_point"
+                            id="redeem_point"
+                            disabled={!showRedeemPointField}
+                            className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                            placeholder="Enter Points to Redeemed"
+                            onChange={handleEventChange}
+                            value={redeemedPoint}
+                          />
                         </div>
 
                         <div className="col-span-6">

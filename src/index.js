@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 import "styles/index.css";
 import "react-toastify/dist/ReactToastify.css";
+import 'react-calendar/dist/Calendar.css'
 
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";

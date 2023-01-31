@@ -1,31 +1,89 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";
 
-const options = {
-  chart: {
-    id: "apexchart-example",
-  },
-  xaxis: {
-    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
-  },
-};
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-const series = [
-  {
-    name: "series-1",
-    data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
-  },
-];
 const LineChart = () => {
-  return (
-    <Chart
-    options={options}
-    series={series}
-    type="line"
-    // width="500"
-  />
-  );
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 50,
+          usePointStyle: true,
+          pointStyle: "line",
+        },
+      },
+      title: {
+        display: true,
+        text: "Total Sales",
+        font: {
+          size: 16,
+          weight: "bold",
+        },
+      },
+    },
+    // scales: {
+    //   x: {
+    //     title: {
+    //       display: true,
+    //       text: "Date",
+    //       // color: "red",
+    //       // font: {
+    //       //   size: 24,
+    //       //   weight: "bold"
+    //       // }
+    //     }
+    //   },
+    //   y: {
+    //     title: {
+    //       display: true,
+    //       text: "Sales",
+    //       // color: "green",
+    //       // font: {
+    //       //   size: 18,
+    //       //   weight: "bold"
+    //       // }
+    //     }
+    //   }
+    // }
+  };
+
+  const labels = ["26/1", "27/1", "28/1", "29/1", "30/1", "31/1"];
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Daily Sales",
+        data: ["62.40", "101.00", 0, 0, "246.00", 0],
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        xAxesID: "xAxes",
+      },
+    ],
+  };
+  return <Line options={options} data={data} />;
 };
 
 export default LineChart;
