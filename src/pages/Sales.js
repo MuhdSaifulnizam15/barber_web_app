@@ -29,9 +29,11 @@ const Sales = () => {
   const [selectedCustomer, setSelectedCustomer] = useState({});
 
   const [total, setTotal] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
   const [rewardedPoint, setRewardedPoint] = useState(0);
   const [redeemedPoint, setRedeemedPoint] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [showRedeemPointField, setShowRedeemPointField] = useState(false);
   const [customerName, setCustomerName] = useState();
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
@@ -48,7 +50,9 @@ const Sales = () => {
       .reduce((a, v) => (a = a + v.price * (v.quantity || 1)), 0)
       .toFixed(2);
     setTotal(newTotal);
-    setRewardedPoint(Math.ceil(newTotal));
+    const afterDiscount = newTotal - discount;
+    setSubTotal(afterDiscount);
+    setRewardedPoint(Math.ceil(afterDiscount));
   }, [selectedService]);
 
   useEffect(() => {
@@ -56,7 +60,7 @@ const Sales = () => {
       setShowRedeemPointField(true);
     } else {
       setShowRedeemPointField(false);
-      setRedeemedPoint(0)
+      setRedeemedPoint(0);
     }
   }, [totalPoints]);
 
@@ -90,6 +94,13 @@ const Sales = () => {
       setCustomerName("");
     }
   }, [customer]);
+
+  useEffect(() => {
+    setDiscount(redeemedPoint/10);
+    const newSubTotal = total - (redeemedPoint/10);
+    setSubTotal(newSubTotal);
+    setRewardedPoint(newSubTotal);
+  }, [redeemedPoint]);
 
   const incrementQuantity = (service, index) => {
     console.log(
@@ -148,7 +159,7 @@ const Sales = () => {
       case "redeem_point":
         setRedeemedPoint(event.target.value);
         break;
-        
+
       default:
         break;
     }
@@ -177,7 +188,7 @@ const Sales = () => {
           service: serv.id,
           quantity: serv.quantity,
         })),
-        total: total,
+        total: subTotal,
         total_redeemed_point: redeemedPoint,
         total_rewarded_point: rewardedPoint,
       };
@@ -189,7 +200,7 @@ const Sales = () => {
           service: serv.id,
           quantity: serv.quantity,
         })),
-        total: total,
+        total: subTotal,
         total_redeemed_point: redeemedPoint,
         total_rewarded_point: rewardedPoint,
         customer_name: customerName,
@@ -597,25 +608,25 @@ const Sales = () => {
                                       <tr>
                                         <th
                                           scope="col"
-                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                          className="text-sm font-medium text-gray-900 px-2 py-4"
                                         >
                                           Service
                                         </th>
                                         <th
                                           scope="col"
-                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                          className="text-sm font-medium text-gray-900 px-2 py-4"
                                         >
                                           Quantity
                                         </th>
                                         <th
                                           scope="col"
-                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                          className="text-sm font-medium text-gray-900 px-2 py-4"
                                         >
                                           Price
                                         </th>
                                         <th
                                           scope="col"
-                                          className="text-sm font-medium text-gray-900 px-6 py-4"
+                                          className="text-sm font-medium text-gray-900 px-2 py-4"
                                         >
                                           Action
                                         </th>
@@ -624,11 +635,11 @@ const Sales = () => {
                                     <tbody>
                                       {selectedService.map((service, index) => (
                                         <tr className="bg-white border-b">
-                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                          <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
                                             {service.name}
                                           </td>
-                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            <div className="flex flex-row h-10 min-w-200 w-max-300 rounded-lg relative bg-transparent mt-1 text-center px-2">
+                                          <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                                            <div className="flex flex-row h-10 min-w-100 w-max-150 rounded-lg relative bg-transparent mt-1 text-center px-2">
                                               <button
                                                 type="button"
                                                 onClick={() =>
@@ -637,7 +648,7 @@ const Sales = () => {
                                                     index
                                                   )
                                                 }
-                                                className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
+                                                className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-10 rounded-l cursor-pointer outline-none"
                                               >
                                                 <span className="m-auto text-2xl font-thin">
                                                   −
@@ -656,7 +667,7 @@ const Sales = () => {
                                                     index
                                                   )
                                                 }
-                                                className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
+                                                className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-10 rounded-r cursor-pointer"
                                               >
                                                 <span className="m-auto text-2xl font-thin">
                                                   +
@@ -664,7 +675,7 @@ const Sales = () => {
                                               </button>
                                             </div>
                                           </td>
-                                          <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                          <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
                                             {"RM " +
                                               (
                                                 service.price *
@@ -691,22 +702,36 @@ const Sales = () => {
                                               colSpan="2"
                                               className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
                                             >
-                                              Total
+                                              Sub-Total
                                             </td>
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                               {"RM " + total}
                                             </td>
                                           </tr>
 
+                                          {showRedeemPointField && (
+                                            <tr className="bg-white border-b">
+                                              <td
+                                                colSpan="2"
+                                                className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
+                                              >
+                                                Discount
+                                              </td>
+                                              <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                {"- RM " + (discount ? discount.toFixed(2) : 0.00)}
+                                              </td>
+                                            </tr>
+                                          )}
+
                                           <tr className="bg-white border-b">
                                             <td
                                               colSpan="2"
                                               className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
                                             >
-                                              Estimated Rewarded Points
+                                              Grand-Total
                                             </td>
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                              {"+ " + Math.ceil(total)}
+                                              {"RM " + subTotal.toFixed(2)}
                                             </td>
                                           </tr>
                                         </>
