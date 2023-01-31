@@ -1,37 +1,54 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const options = {
-  chart: {
-    id: "apexchart-example",
-  },
-  title: {
-    text: "Doughnut Chart Title",
-    align: "centre",
-    margin: 20,
-    offsetX: 0,
-    offsetY: 0,
-    floating: false,
-    style: {
-      fontSize: "14px",
-      fontWeight: "bold",
-      color: "#263238",
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+    title: {
+      display: true,
+      text: "Total Sales by Service",
+      font: {
+        size: 16,
+        weight: "bold",
+      },
     },
   },
 };
-const series = [44, 55, 41, 17, 15];
-const labels = ["A", "B", "C", "D", "E"];
 
+const data = {
+  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+  datasets: [
+    {
+      label: "Services",
+      data: [12, 19, 3, 5, 2, 3],
+      backgroundColor: [
+        "rgba(255, 99, 132, 0.2)",
+        "rgba(54, 162, 235, 0.2)",
+        "rgba(255, 206, 86, 0.2)",
+        "rgba(75, 192, 192, 0.2)",
+        "rgba(153, 102, 255, 0.2)",
+        "rgba(255, 159, 64, 0.2)",
+      ],
+      borderColor: [
+        "rgba(255, 99, 132, 1)",
+        "rgba(54, 162, 235, 1)",
+        "rgba(255, 206, 86, 1)",
+        "rgba(75, 192, 192, 1)",
+        "rgba(153, 102, 255, 1)",
+        "rgba(255, 159, 64, 1)",
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
 const DoughnutChart = () => {
-  return (
-    <Chart
-      options={options}
-      series={series}
-      type="donut"
-      // width={500}
-      // height={320}
-    />
-  );
+  return <Pie data={data} options={options} />;
 };
 
 export default DoughnutChart;
