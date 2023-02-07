@@ -205,7 +205,7 @@ const Sales = () => {
           service: serv.id,
           quantity: serv.quantity,
         })),
-        total: subTotal,
+        total: total,
         total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
       };
@@ -217,7 +217,7 @@ const Sales = () => {
           service: serv.id,
           quantity: serv.quantity,
         })),
-        total: subTotal,
+        total: total,
         total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
         customer_name: customerName,
