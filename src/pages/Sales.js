@@ -8,9 +8,7 @@ import Navbar from "components/Navbar";
 import Footer from "components/Footer";
 import Header from "components/Header";
 
-// import branchData from 'data/branch';
-import pointsData from "data/point";
-// import servicesData from 'data/service';
+import freebieData from "data/freebies";
 
 import { classNames } from "utils/helper";
 
@@ -27,6 +25,7 @@ const Sales = () => {
   const [selectedStaff, setSelectedStaff] = useState();
   const [selectedBranch, setSelectedBranch] = useState();
   const [selectedCustomer, setSelectedCustomer] = useState({});
+  const [selectedFreebie, setSelectedFreebie] = useState({});
 
   const [total, setTotal] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
@@ -46,13 +45,19 @@ const Sales = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const newTotal = selectedService
+    // const newTotal = selectedService
+    //   .reduce((a, v) => (a = a + v.price * (v.quantity || 1)), 0)
+    //   .toFixed(2);
+    // setTotal(newTotal);
+    // const afterDiscount = newTotal - discount;
+    // setSubTotal(afterDiscount);
+    // setRewardedPoint(Math.ceil(afterDiscount));
+
+    const total = selectedService
       .reduce((a, v) => (a = a + v.price * (v.quantity || 1)), 0)
       .toFixed(2);
-    setTotal(newTotal);
-    const afterDiscount = newTotal - discount;
-    setSubTotal(afterDiscount);
-    setRewardedPoint(Math.ceil(afterDiscount));
+    setTotal(total);
+    setRewardedPoint(Math.ceil(total));
   }, [selectedService]);
 
   useEffect(() => {
@@ -74,6 +79,7 @@ const Sales = () => {
     } else {
       setTotalPoints(0);
       setCustomerName("");
+      setSelectedFreebie({});
     }
   }, [customerPhoneNumber]);
 
@@ -92,15 +98,17 @@ const Sales = () => {
     } else {
       setTotalPoints(0);
       setCustomerName("");
+      setSelectedCustomer({});
+      setSelectedFreebie({});
     }
   }, [customer]);
 
-  useEffect(() => {
-    setDiscount(redeemedPoint/10);
-    const newSubTotal = total - (redeemedPoint/10);
-    setSubTotal(newSubTotal);
-    setRewardedPoint(newSubTotal);
-  }, [redeemedPoint]);
+  // useEffect(() => {
+  //   setDiscount(redeemedPoint / 10);
+  //   const newSubTotal = total - redeemedPoint / 10;
+  //   setSubTotal(newSubTotal);
+  //   setRewardedPoint(newSubTotal);
+  // }, [redeemedPoint]);
 
   const incrementQuantity = (service, index) => {
     console.log(
@@ -142,6 +150,10 @@ const Sales = () => {
     );
   };
 
+  const removeFreebies = () => {
+    setSelectedFreebie({});
+  };
+
   const checkForTotalPoints = () => {
     dispatch(getCustomerByPhoneNo(customerPhoneNumber));
   };
@@ -174,10 +186,15 @@ const Sales = () => {
     setSelectedBranch({});
     setCustomerName("");
     setCustomerPhoneNum("");
+    setSelectedFreebie({});
+    setSelectedCustomer({});
   };
 
   const submitForm = async (event) => {
     event.preventDefault();
+
+    let _redeemedPoint = selectedFreebie ? selectedFreebie?.point : 0;
+
     let data;
     if (customer) {
       data = {
@@ -189,7 +206,7 @@ const Sales = () => {
           quantity: serv.quantity,
         })),
         total: subTotal,
-        total_redeemed_point: redeemedPoint,
+        total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
       };
     } else {
@@ -201,7 +218,7 @@ const Sales = () => {
           quantity: serv.quantity,
         })),
         total: subTotal,
-        total_redeemed_point: redeemedPoint,
+        total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
         customer_name: customerName,
         customer_phone_no: customerPhoneNumber,
@@ -572,24 +589,128 @@ const Sales = () => {
                           </label>
                         </div>
 
-                        <div className="col-span-6 sm:col-span-4">
-                          <label
-                            htmlFor="price"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                          >
-                            Redeem Point
-                          </label>
-                          <input
-                            type="number"
-                            name="redeem_point"
-                            id="redeem_point"
-                            disabled={!showRedeemPointField}
-                            className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
-                            placeholder="Enter Points to Redeemed"
-                            onChange={handleEventChange}
-                            value={redeemedPoint}
-                          />
-                        </div>
+                        {showRedeemPointField && (
+                          <div className="col-span-6 sm:col-span-4">
+                            <Listbox
+                              value={selectedFreebie}
+                              onChange={setSelectedFreebie}
+                            >
+                              {({ open }) => (
+                                <>
+                                  <Listbox.Label className="block text-sm font-medium text-gray-700">
+                                    Redeem Service
+                                  </Listbox.Label>
+                                  <div className="relative mt-1">
+                                    <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                                      <span className="flex items-center">
+                                        <span
+                                          className="ml-3 block truncate text-gray-700"
+                                          style={
+                                            !selectedFreebie?.name
+                                              ? { color: "red" }
+                                              : { color: "black" }
+                                          }
+                                        >
+                                          {selectedFreebie?.name
+                                            ? selectedFreebie.quantity +
+                                              " x " +
+                                              selectedFreebie.name
+                                            : "Select Services to Redeem"}
+                                        </span>
+                                      </span>
+                                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <ChevronUpDownIcon
+                                          className="h-5 w-5 text-gray-400"
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                    </Listbox.Button>
+
+                                    <Transition
+                                      show={open}
+                                      as={Fragment}
+                                      leave="transition ease-in duration-100"
+                                      leaveFrom="opacity-100"
+                                      leaveTo="opacity-0"
+                                    >
+                                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                        {freebieData &&
+                                          freebieData.map((freebie) => (
+                                            <Listbox.Option
+                                              key={freebie.id}
+                                              className={({ active }) =>
+                                                classNames(
+                                                  active
+                                                    ? "text-white bg-indigo-600"
+                                                    : "text-gray-900",
+                                                  "relative cursor-default select-none py-2 pl-3 pr-9"
+                                                )
+                                              }
+                                              value={freebie}
+                                              disabled={
+                                                freebie.point > totalPoints
+                                              }
+                                            >
+                                              {({ selected, active }) => (
+                                                <>
+                                                  <div
+                                                    className={classNames(
+                                                      freebie.point >
+                                                        totalPoints
+                                                        ? "line-through"
+                                                        : "",
+                                                      "flex items-center justify-between"
+                                                    )}
+                                                  >
+                                                    <span
+                                                      className={classNames(
+                                                        selected
+                                                          ? "font-semibold"
+                                                          : "font-light",
+                                                        "ml-3 block truncate"
+                                                      )}
+                                                    >
+                                                      {freebie.name}
+                                                    </span>
+                                                    <span
+                                                      className={classNames(
+                                                        selected
+                                                          ? "font-semibold"
+                                                          : "font-light",
+                                                        "ml-3 block truncate"
+                                                      )}
+                                                    >
+                                                      {freebie.point + " pts "}
+                                                    </span>
+                                                  </div>
+
+                                                  {selected ? (
+                                                    <span
+                                                      className={classNames(
+                                                        active
+                                                          ? "text-white"
+                                                          : "text-indigo-600",
+                                                        "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                      )}
+                                                    >
+                                                      <CheckIcon
+                                                        className="h-5 w-5"
+                                                        aria-hidden="true"
+                                                      />
+                                                    </span>
+                                                  ) : null}
+                                                </>
+                                              )}
+                                            </Listbox.Option>
+                                          ))}
+                                      </Listbox.Options>
+                                    </Transition>
+                                  </div>
+                                </>
+                              )}
+                            </Listbox>
+                          </div>
+                        )}
 
                         <div className="col-span-6">
                           <label
@@ -695,6 +816,32 @@ const Sales = () => {
                                           </td>
                                         </tr>
                                       ))}
+                                      {selectedFreebie &&
+                                        Object.keys(selectedFreebie).length >
+                                          0 && (
+                                          <tr className="bg-white border-b">
+                                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                                              {selectedFreebie.name}
+                                            </td>
+                                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                                              {selectedFreebie.quantity}
+                                            </td>
+                                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                                              {"- " +
+                                                selectedFreebie.point +
+                                                " pts"}
+                                            </td>
+                                            <td className="text-sm text-gray-900 font-light p-2 whitespace-nowrap">
+                                              <button
+                                                type="button"
+                                                className="justify-center rounded-md border border-transparent px-2 py-1 bg-red-600 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                                onClick={() => removeFreebies()}
+                                              >
+                                                X
+                                              </button>
+                                            </td>
+                                          </tr>
+                                        )}
                                       {total > 0 && (
                                         <>
                                           <tr className="bg-white border-b">
@@ -709,7 +856,7 @@ const Sales = () => {
                                             </td>
                                           </tr>
 
-                                          {showRedeemPointField && (
+                                          {/* {showRedeemPointField && (
                                             <tr className="bg-white border-b">
                                               <td
                                                 colSpan="2"
@@ -718,12 +865,15 @@ const Sales = () => {
                                                 Discount
                                               </td>
                                               <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                {"- RM " + (discount ? discount.toFixed(2) : 0.00)}
+                                                {"- RM " +
+                                                  (discount
+                                                    ? discount.toFixed(2)
+                                                    : 0.0)}
                                               </td>
                                             </tr>
-                                          )}
+                                          )} */}
 
-                                          <tr className="bg-white border-b">
+                                          {/* <tr className="bg-white border-b">
                                             <td
                                               colSpan="2"
                                               className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center"
@@ -733,7 +883,7 @@ const Sales = () => {
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                               {"RM " + subTotal.toFixed(2)}
                                             </td>
-                                          </tr>
+                                          </tr> */}
                                         </>
                                       )}
                                     </tbody>
