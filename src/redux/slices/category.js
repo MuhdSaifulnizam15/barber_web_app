@@ -29,7 +29,7 @@ const slice = createSlice({
     },
 
     // GET ALL CATEGORY
-    getAllCustomerSuccess(state, action) {
+    getAllCategorySuccess(state, action) {
       state.isLoading = false;
       state.categories = action.payload;
     },
@@ -64,7 +64,7 @@ export function getAllCategories() {
     try {
       const response = await axios.get("/categories");
       console.log("response", response.data);
-      dispatch(slice.actions.getAllCustomerSuccess(response.data.result));
+      dispatch(slice.actions.getAllCategorySuccess(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
