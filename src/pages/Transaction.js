@@ -1,8 +1,9 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import Calendar from "react-calendar";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "redux/store";
 
 import LineChart from "components/LineChart";
 import DoughnutChart from "components/DoughnutChart";
@@ -11,6 +12,8 @@ import Navbar from "components/Navbar";
 import Header from "components/Header";
 
 import { classNames } from "utils/helper";
+
+import { getTotalSalesChart } from "redux/slices/transaction";
 
 const options = [
   {
@@ -35,6 +38,19 @@ const Transaction = () => {
   const [selectedType, setSelectedType] = useState(options[0]);
   const [value, onChange] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
+
+  const { transaction, isLoading } = useSelector((state) => state.transaction);
+
+  const dispatch = useDispatch();
+
+  useEffect(async () => {
+    await dispatch(getTotalSalesChart(selectedType.name));
+  }, []);
+
+  useEffect(async () => {
+    if (selectedType?.name)
+      await dispatch(getTotalSalesChart(selectedType.name));
+  }, [selectedType]);
 
   return (
     <div>
@@ -197,7 +213,10 @@ const Transaction = () => {
                     </Listbox>
                   </div>
 
-                  <LineChart />
+                  <LineChart
+                    labels={transaction?.label}
+                    dataList={transaction?.data}
+                  />
                 </div>
 
                 <div className="max-w-4xl">
