@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-const LineChart = () => {
+const LineChart = ({ labels = [], dataList = [] }) => {
   const options = {
     responsive: true,
     plugins: {
@@ -69,14 +69,14 @@ const LineChart = () => {
     // }
   };
 
-  const labels = ["26/1", "27/1", "28/1", "29/1", "30/1", "31/1"];
+  // const labels = ["26/1", "27/1", "28/1", "29/1", "30/1", "31/1"];
 
   const data = {
     labels,
     datasets: [
       {
         label: "Daily Sales",
-        data: ["62.40", "101.00", 0, 0, "246.00", 0],
+        data: dataList,
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
         xAxesID: "xAxes",
