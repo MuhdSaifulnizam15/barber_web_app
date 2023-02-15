@@ -38,6 +38,11 @@ const slice = createSlice({
     addSalesSuccess(state, action) {
       state.isLoading = false;
     },
+
+    // DELETE SALES
+    deleteSalesSuccess(state, action) {
+      state.isLoading = false;
+    },
   },
 });
 
@@ -53,7 +58,7 @@ export function getAllSales() {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.get("/sales");
-      console.log('response', response.data);
+      console.log("response", response.data);
       dispatch(slice.actions.getSalesSuccess(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -66,7 +71,7 @@ export function addSales(data) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.post("/sales", data);
-      console.log('response', response.data);
+      console.log("response", response.data);
       dispatch(slice.actions.addSalesSuccess(response.data.sale));
 
       toast.success("Sales successfully added", {
@@ -80,7 +85,7 @@ export function addSales(data) {
         theme: "light",
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       dispatch(slice.actions.hasError(error));
       toast.error(error.message, {
         position: "top-right",
@@ -92,6 +97,30 @@ export function addSales(data) {
         progress: undefined,
         theme: "light",
       });
+    }
+  };
+}
+
+export function deleteSales(id) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.post(`/sales/delete/${id}`);
+      console.log("response", response.data);
+      dispatch(slice.actions.deleteSalesSuccess(response.data));
+
+      toast.success(response.data.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
     }
   };
 }

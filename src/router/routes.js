@@ -30,7 +30,7 @@ export const PATH_PAGE = {
     settings: '/settings',
     sales: '/sales',
     transaction: '/transactions',
-    history: '/transactions',
+    history: '/history',
 };
 
 export const PATH_ADMIN = {
