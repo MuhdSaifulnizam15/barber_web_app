@@ -70,11 +70,11 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllSales({ page = 1 }) {
+export function getAllSales({ page = 1, userId = '' }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/sales?page=${page}`);
+      const response = await axios.get(`/sales?page=${page}&userId=${userId}`);
       console.log("response", response.data);
       dispatch(slice.actions.getSalesSuccess(response.data.result));
     } catch (error) {

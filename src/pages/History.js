@@ -1,10 +1,13 @@
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "redux/store";
+import { useLocation } from "react-router-dom";
 
 import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 import Header from "components/Header";
 import Pagination from "components/Pagination";
+
+import useAuth from "hooks/useAuth";
 
 import { getAllSales, deleteSales } from "redux/slices/sales";
 
@@ -33,10 +36,15 @@ const History = () => {
     nextPage,
   } = useSelector((state) => state.sales);
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(async () => {
-    await dispatch(getAllSales({}));
-  }, [dispatch]);
+    if (user)
+      await dispatch(
+        getAllSales({ userId: user?.role === "staff" ? user?.id : null })
+      );
+  }, [dispatch, location, user]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -50,7 +58,12 @@ const History = () => {
 
   useEffect(async () => {
     console.log("currentPage", currentPage);
-    await dispatch(getAllSales({ page: currentPage }));
+    await dispatch(
+      getAllSales({
+        page: currentPage,
+        userId: user?.role === "staff" ? user?.id : '',
+      })
+    );
   }, [currentPage]);
 
   const resetForm = () => {
@@ -87,7 +100,9 @@ const History = () => {
   const submitSaleDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteSales(id));
-    await dispatch(getAllSales({ page: currentPage }));
+    await dispatch(
+      getAllSales({ page: currentPage, userId: user?.role === "staff" ? user?.id : null })
+    );
     setShowDeleteModal(false);
     setSelected(null);
   };
@@ -338,7 +353,7 @@ const History = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {sales.docs ? (
+                    {sales.docs && sales.docs.length > 0 ? (
                       sales.docs.map((item, index) => (
                         <tr className="border-b border-gray-200" key={item.id}>
                           <td className="px-6 py-4 whitespace-no-wrap">
