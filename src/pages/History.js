@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "redux/store";
 import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 import Header from "components/Header";
+import Pagination from "components/Pagination";
 
 import { getAllSales, deleteSales } from "redux/slices/sales";
 
@@ -17,11 +18,24 @@ const History = () => {
   const [barberName, setBarberName] = useState(null);
   const [total, setTotal] = useState(null);
   const [services, setServices] = useState([]);
-  const { sales, isLoading } = useSelector((state) => state.sales);
+  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    sales,
+    isLoading,
+    pagingCounter,
+    currPage,
+    totalDocs,
+    totalPages,
+    limit,
+    hasPrevPage,
+    hasNextPage,
+    prevPage,
+    nextPage,
+  } = useSelector((state) => state.sales);
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await dispatch(getAllSales());
+    await dispatch(getAllSales({}));
   }, [dispatch]);
 
   useEffect(() => {
@@ -33,6 +47,11 @@ const History = () => {
       resetForm();
     }
   }, [isLoading]);
+
+  useEffect(async () => {
+    console.log("currentPage", currentPage);
+    await dispatch(getAllSales({ page: currentPage }));
+  }, [currentPage]);
 
   const resetForm = () => {
     console.log("resetForm");
@@ -68,7 +87,7 @@ const History = () => {
   const submitSaleDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteSales(id));
-    await dispatch(getAllSales());
+    await dispatch(getAllSales({ page: currentPage }));
     setShowDeleteModal(false);
     setSelected(null);
   };
@@ -76,9 +95,9 @@ const History = () => {
   return (
     <div>
       <div className="min-h-full">
-        <Navbar current="Customer" />
+        <Navbar current="History" />
 
-        <Header title="Customer" />
+        <Header title="History" />
       </div>
       <main>
         {showModal ? (
@@ -320,17 +339,20 @@ const History = () => {
                   </thead>
                   <tbody className="bg-white">
                     {sales.docs ? (
-                      sales.docs.map((item) => (
-                        <tr key={item.id}>
-                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                      sales.docs.map((item, index) => (
+                        <tr className="border-b border-gray-200" key={item.id}>
+                          <td className="px-6 py-4 whitespace-no-wrap">
                             <div className="flex items-center">
                               <div className="text-sm font-medium leading-5 text-gray-900">
-                                {item?.customer_id?.name}
+                                {pagingCounter +
+                                  index +
+                                  ". " +
+                                  item?.customer_id?.name}
                               </div>
                             </div>
                           </td>
 
-                          <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                          <td className="px-6 py-4 whitespace-no-wrap">
                             <div className="flex items-center">
                               <div className="text-sm font-medium leading-5 text-gray-900">
                                 {parseFloat(item?.total).toFixed(2)}
@@ -338,7 +360,7 @@ const History = () => {
                             </div>
                           </td>
 
-                          <td className="flex flex-row justify-center items-center px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap border-b border-gray-200">
+                          <td className="flex flex-row justify-center items-center px-6 py-4 text-sm leading-5 text-gray-500 whitespace-no-wrap">
                             <button
                               type="button"
                               className="w-7 h-7 hover:text-yellow-300 mx-2"
@@ -431,6 +453,19 @@ const History = () => {
                 </table>
               </div>
             </div>
+
+            <Pagination
+              current={currPage}
+              total={totalDocs}
+              totalPage={totalPages}
+              pagingCounter={pagingCounter}
+              limit={limit}
+              hasNextPage={hasNextPage}
+              hasPreviousPage={hasPrevPage}
+              prevPage={prevPage}
+              nextPage={nextPage}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
           </div>
         </div>
       </main>

@@ -11,6 +11,15 @@ const initialState = {
   isLoading: false,
   error: false,
   sales: [],
+  currPage: 0,
+  pagingCounter: 0,
+  totalPages: 0,
+  totalDocs: 0,
+  limit: 10,
+  hasPrevPage: false,
+  hasNextPage: true,
+  prevPage: null,
+  nextPage: null
 };
 
 const slice = createSlice({
@@ -32,6 +41,14 @@ const slice = createSlice({
     getSalesSuccess(state, action) {
       state.isLoading = false;
       state.sales = action.payload;
+      state.currPage = action.payload?.page;
+      state.totalDocs = action.payload?.totalDocs;
+      state.pagingCounter = action.payload?.pagingCounter;
+      state.hasPrevPage = action.payload?.hasPrevPage;
+      state.hasNextPage = action.payload?.hasNextPage;
+      state.prevPage = action.payload?.prevPage;
+      state.nextPage = action.payload?.nextPage;
+      state.totalPages = action.payload?.totalPages;
     },
 
     // ADD SALES
@@ -53,11 +70,11 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllSales() {
+export function getAllSales({ page = 1 }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get("/sales");
+      const response = await axios.get(`/sales?page=${page}`);
       console.log("response", response.data);
       dispatch(slice.actions.getSalesSuccess(response.data.result));
     } catch (error) {
