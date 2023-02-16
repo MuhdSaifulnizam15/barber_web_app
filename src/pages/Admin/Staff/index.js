@@ -25,6 +25,10 @@ const Staff = () => {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedBranch, setSelectedBranch] = useState();
   const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [password, setPassword] = useState();
   const [phoneNo, setPhoneNo] = useState();
   const { staff, isLoading } = useSelector((state) => state.staff);
   const { branch } = useSelector((state) => state.branch);
@@ -61,6 +65,22 @@ const Staff = () => {
         }
         break;
 
+      case "staff_email":
+        setEmail(event.target.value);
+        break;
+
+      case "password":
+        setPassword(event.target.value);
+        break;
+
+      case "staff_first_name":
+        setFirstName(event.target.value);
+        break;
+
+      case "staff_last_name":
+        setLastName(event.target.value);
+        break;
+
       default:
         break;
     }
@@ -70,6 +90,9 @@ const Staff = () => {
     console.log("resetForm");
     setName();
     setPhoneNo();
+    setEmail();
+    setFirstName();
+    setLastName();
     setViewMode(false);
     setSelectedItem();
     setSelectedBranch();
@@ -78,11 +101,16 @@ const Staff = () => {
 
   const submitForm = async (event) => {
     event.preventDefault();
-    if (name && phoneNo && selectedBranch) {
+    if (phoneNo && selectedBranch && email && firstName && lastName) {
       const data = {
-        full_name: name,
+        full_name: firstName + " " + lastName,
+        email: email,
+        first_name: firstName,
+        last_name: lastName,
         phone_no: phoneNo,
         branch_id: selectedBranch?.id,
+        user_id: selectedItem?.user_id?.id,
+        password: password,
       };
 
       console.log("data", data);
@@ -153,27 +181,75 @@ const Staff = () => {
                       </div>
 
                       <div className="relative p-6 flex-auto">
-                        <label
-                          className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                          Staff Name
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Staff Email
                         </label>
                         <input
                           type="text"
-                          name="staff_name"
-                          id="staff_name"
+                          name="staff_email"
+                          id="staff_email"
+                          disabled={
+                            viewMode ? true : selectedItem ? true : false
+                          }
+                          className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                          placeholder="Enter Staff Email"
+                          onChange={handleEventChange}
+                          value={email}
+                        />
+                      </div>
+
+                      {!viewMode && !selectedItem ? (
+                        <div className="relative px-6 pb-6 flex-auto">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Staff Password
+                          </label>
+                          <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            disabled={viewMode}
+                            className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                            placeholder="Enter Staff Name"
+                            onChange={handleEventChange}
+                            value={password}
+                          />
+                        </div>
+                      ) : null}
+
+                      <div className="relative px-6 pb-6 flex-auto">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Staff First Name
+                        </label>
+                        <input
+                          type="text"
+                          name="staff_first_name"
+                          id="staff_first_name"
                           disabled={viewMode}
                           className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
-                          placeholder="Enter Staff Name"
+                          placeholder="Enter Staff First Name"
                           onChange={handleEventChange}
-                          value={name}
+                          value={firstName}
                         />
                       </div>
 
                       <div className="relative px-6 pb-6 flex-auto">
-                        <label
-                          className="block text-sm font-medium text-gray-700 mb-2"
-                        >
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Staff Last Name
+                        </label>
+                        <input
+                          type="text"
+                          name="staff_last_name"
+                          id="staff_last_name"
+                          disabled={viewMode}
+                          className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700"
+                          placeholder="Enter Staff Last Name"
+                          onChange={handleEventChange}
+                          value={lastName}
+                        />
+                      </div>
+
+                      <div className="relative px-6 pb-6 flex-auto">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Staff Phone Number
                         </label>
                         <input
@@ -420,6 +496,9 @@ const Staff = () => {
                                     setViewMode(true);
                                     setPhoneNo(item?.phone_no);
                                     setName(item?.full_name);
+                                    setFirstName(item?.user_id?.first_name);
+                                    setLastName(item?.user_id?.last_name);
+                                    setEmail(item?.user_id?.email);
                                   }}
                                 >
                                   <svg
@@ -452,6 +531,9 @@ const Staff = () => {
                                     setSelectedBranch(item?.branch_id);
                                     setPhoneNo(item?.phone_no);
                                     setName(item?.full_name);
+                                    setFirstName(item?.user_id?.first_name);
+                                    setLastName(item?.user_id?.last_name);
+                                    setEmail(item?.user_id?.email);
                                   }}
                                 >
                                   <svg
@@ -496,9 +578,7 @@ const Staff = () => {
                           ))
                         ) : (
                           <tr>
-                            <td className="text-center py-2">
-                              No staff found
-                            </td>
+                            <td className="text-center py-2">No staff found</td>
                           </tr>
                         )}
                       </tbody>
