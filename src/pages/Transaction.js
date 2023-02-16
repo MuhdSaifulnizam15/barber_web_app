@@ -5,7 +5,7 @@ import Calendar from "react-calendar";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "redux/store";
 
-import LineChart from "components/LineChart";
+import BarChart from "components/BarChart";
 import DoughnutChart from "components/DoughnutChart";
 import Footer from "../components/Footer";
 import Navbar from "components/Navbar";
@@ -13,7 +13,10 @@ import Header from "components/Header";
 
 import { classNames } from "utils/helper";
 
-import { getTotalSalesChart } from "redux/slices/transaction";
+import {
+  getTotalSalesChart,
+  getTotalSalesByServiceChart,
+} from "redux/slices/transaction";
 
 const options = [
   {
@@ -36,21 +39,43 @@ const options = [
 
 const Transaction = () => {
   const [selectedType, setSelectedType] = useState(options[0]);
-  const [value, onChange] = useState(new Date());
+  const [startDate, setStartDate] = useState([
+    dayjs().subtract(1, "day").toDate(),
+    dayjs().toDate(),
+  ]);
   const [showModal, setShowModal] = useState(false);
 
-  const { transaction, isLoading } = useSelector((state) => state.transaction);
+  const { transaction, services, isLoading } = useSelector(
+    (state) => state.transaction
+  );
 
   const dispatch = useDispatch();
 
   useEffect(async () => {
     await dispatch(getTotalSalesChart(selectedType.name));
+    await dispatch(
+      getTotalSalesByServiceChart({
+        startDate: startDate.length > 0 ? startDate[0] : startDate,
+        endDate: startDate.length > 0 ? startDate[1] : startDate,
+      })
+    );
   }, []);
 
   useEffect(async () => {
     if (selectedType?.name)
       await dispatch(getTotalSalesChart(selectedType.name));
   }, [selectedType]);
+
+  useEffect(async () => {
+    if (startDate.length > 0) {
+      await dispatch(
+        getTotalSalesByServiceChart({
+          startDate: startDate.length > 0 ? startDate[0] : startDate,
+          endDate: startDate.length > 0 ? startDate[1] : startDate,
+        })
+      );
+    }
+  }, [startDate]);
 
   return (
     <div>
@@ -62,7 +87,7 @@ const Transaction = () => {
           {showModal ? (
             <>
               <div className="flex justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                <div className="relative w-full mx-6 md:mx-0 md:w-4/5 lg:w-3/5 my-6 mx-auto max-w-6xl">
+                <div className="relative w-fit mx-6 md:mx-0 md:w-4/5 lg:w-3/5 my-6 mx-auto">
                   <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                     <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                       <h3 className="text-3xl font-semibold">Select Date</h3>
@@ -87,8 +112,13 @@ const Transaction = () => {
                       </button>
                     </div>
 
-                    <div className="p-2">
-                      <Calendar onChange={onChange} value={value} />
+                    <div className="flex justify-center p-2">
+                      <Calendar
+                        onChange={setStartDate}
+                        value={startDate}
+                        maxDate={new Date()}
+                        selectRange
+                      />
                     </div>
 
                     <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
@@ -117,7 +147,7 @@ const Transaction = () => {
           <div className="px-4 sm:px-0 overflow-auto">
             <div className="sm:mt-0 overflow-auto ">
               <div className="lg:block md:max-w-3/6 md:items-center md:justify-center">
-                <div className="max-w-4xl mb-10">
+                <div className="max-w-4xl mb-10 border border-slate-50 p-1">
                   <div className="flex flex-row items-center col-span-6 sm:col-span-3 mb-3">
                     <Listbox value={selectedType} onChange={setSelectedType}>
                       {({ open }) => (
@@ -213,15 +243,23 @@ const Transaction = () => {
                     </Listbox>
                   </div>
 
-                  <LineChart
+                  <BarChart
                     labels={transaction?.label}
                     dataList={transaction?.data}
                   />
                 </div>
 
-                <div className="max-w-4xl">
+                <div className="max-w-4xl border border-slate-50 py-2 px-2">
                   <div className="flex row-flex items-center mb-2">
-                    <p>{"Date: " + dayjs(value).format("DD MMM YYYY")}</p>
+                    <p className="font-medium text-base text-slate-200">
+                      Start Date:
+                      <span className="font-light text-sm">
+                        {" " +
+                          dayjs(
+                            startDate.length > 0 ? startDate[0] : startDate
+                          ).format("DD MMM YYYY")}
+                      </span>
+                    </p>
                     <button
                       className="ml-3 bg-blue-500 px-2 py-1 rounded-md text-xs text-white"
                       onClick={() => setShowModal(true)}
@@ -229,8 +267,29 @@ const Transaction = () => {
                       Select Date
                     </button>
                   </div>
-                  {/* <p className="text-center mt-3">{"No sales recorded on " + dayjs(value).format('DD MMM YYYY')} </p> */}
-                  <DoughnutChart />
+
+                  <div className="flex row-flex items-center mb-2">
+                    <p className="font-medium text-base text-slate-200">
+                      End Date:
+                      <span className="font-light text-sm">
+                        {" " +
+                          dayjs(
+                            startDate.length > 0 ? startDate[1] : startDate
+                          ).format("DD MMM YYYY")}
+                      </span>
+                    </p>
+                    <button
+                      className="ml-3 bg-blue-500 px-2 py-1 rounded-md text-xs text-white"
+                      onClick={() => setShowModal(true)}
+                    >
+                      Select Date
+                    </button>
+                  </div>
+                  {/* <p className="text-center mt-3">{"No sales recorded on " + dayjs(startDate).format('DD MMM YYYY')} </p> */}
+                  <DoughnutChart
+                    labels={services?.label}
+                    dataList={services?.data}
+                  />
                 </div>
               </div>
             </div>

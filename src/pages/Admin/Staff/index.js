@@ -6,6 +6,7 @@ import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 import Header from "components/Header";
+import Pagination from "components/Pagination";
 
 import { classNames } from "utils/helper";
 
@@ -505,6 +506,8 @@ const Staff = () => {
                   </div>
                 </div>
               </div>
+
+              <Pagination />
             </div>
           </div>
         </main>
