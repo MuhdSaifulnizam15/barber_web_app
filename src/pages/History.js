@@ -21,6 +21,7 @@ const History = () => {
   const [barberName, setBarberName] = useState(null);
   const [total, setTotal] = useState(null);
   const [services, setServices] = useState([]);
+  const [freebie, setFreebie] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const {
     sales,
@@ -239,6 +240,19 @@ const History = () => {
                             </td>
                           </tr>
                         ))}
+                        {freebie.map((item) => (
+                          <tr className="bg-white border-b">
+                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                              {'*' + item?.name}
+                            </td>
+                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                              {item?.quantity}
+                            </td>
+                            <td className="text-sm text-gray-900 font-light px-2 py-4 whitespace-nowrap">
+                              {item?.point + " pts"}
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -388,6 +402,7 @@ const History = () => {
                                 setBarberName(item?.barber_id?.full_name);
                                 setTotal(item?.total);
                                 setServices(item?.order);
+                                setFreebie(item?.freebie);
                               }}
                             >
                               <svg
