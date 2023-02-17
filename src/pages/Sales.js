@@ -208,6 +208,13 @@ const Sales = () => {
         total: total,
         total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
+        freebie: [
+          {
+            name: selectedFreebie?.name,
+            quantity: selectedFreebie?.quantity,
+            point: selectedFreebie?.point,
+          },
+        ],
       };
     } else {
       data = {
@@ -705,6 +712,11 @@ const Sales = () => {
                                           ))}
                                       </Listbox.Options>
                                     </Transition>
+                                  </div>
+                                  <div className="relative mt-1">
+                                    <p className="text-xs italic font-light text-gray-500">
+                                      Can only redeem one service per order
+                                    </p>
                                   </div>
                                 </>
                               )}
