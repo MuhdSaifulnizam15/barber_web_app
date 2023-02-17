@@ -433,7 +433,7 @@ const History = () => {
                                     />
                                   </svg>
                                 </button> */}
-
+                            {user?.role === 'admin' ?
                             <button
                               type="button"
                               className="w-7 h-7 hover:text-red-300 mx-2"
@@ -456,6 +456,7 @@ const History = () => {
                                 />
                               </svg>
                             </button>
+                            : null}
                           </td>
                         </tr>
                       ))
