@@ -192,7 +192,6 @@ const Sales = () => {
 
   const submitForm = async (event) => {
     event.preventDefault();
-
     let _redeemedPoint = selectedFreebie ? selectedFreebie?.point : 0;
 
     let data;
@@ -208,13 +207,13 @@ const Sales = () => {
         total: total,
         total_redeemed_point: _redeemedPoint,
         total_rewarded_point: rewardedPoint,
-        freebie: [
+        freebie: selectedFreebie?.name ? [
           {
             name: selectedFreebie?.name,
             quantity: selectedFreebie?.quantity,
             point: selectedFreebie?.point,
           },
-        ],
+        ] : [],
       };
     } else {
       data = {
