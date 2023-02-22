@@ -70,7 +70,7 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllSales({ page = 1, userId = '' }) {
+export function getAllSales({ page = 1, userId = 0 }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {

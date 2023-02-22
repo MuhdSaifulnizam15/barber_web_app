@@ -43,7 +43,7 @@ const History = () => {
   useEffect(async () => {
     if (user)
       await dispatch(
-        getAllSales({ userId: user?.role === "staff" ? user?.id : null })
+        getAllSales({ userId: user?.role === "staff" ? user?.id : 0 })
       );
   }, [dispatch, location, user]);
 
