@@ -86,7 +86,7 @@ const Sales = () => {
   useEffect(async () => {
     await dispatch(getAllBranch());
     await dispatch(getAllStaff());
-    await dispatch(getAllServices());
+    await dispatch(getAllServices({ limit: 50 }));
   }, [dispatch]);
 
   useEffect(() => {
