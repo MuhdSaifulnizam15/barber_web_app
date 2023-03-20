@@ -1,9 +1,9 @@
-import { createContext, useEffect, useReducer } from "react";
-import PropTypes from "prop-types";
+import { createContext, useEffect, useReducer } from 'react';
+import PropTypes from 'prop-types';
 // utils
-import axios from "../utils/axios";
-import { isValidToken, setSession } from "../utils/jwt";
-import { toast } from "react-toastify";
+import axios from '../utils/axios';
+import { isValidToken, setSession } from '../utils/jwt';
+import { toast } from 'react-toastify';
 
 // ----------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ const reducer = (state, action) =>
 
 const AuthContext = createContext({
   ...initialState,
-  method: "jwt",
+  method: 'jwt',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   refresh: () => Promise.resolve(),
@@ -98,39 +98,42 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const accessToken = window.localStorage.getItem("accessToken");
-        const refreshToken = window.localStorage.getItem("refreshToken");
-        console.log("accessToken", accessToken, refreshToken);
+        const accessToken = window.localStorage.getItem('accessToken');
+        const refreshToken = window.localStorage.getItem('refreshToken');
+        console.log('accessToken', accessToken, refreshToken);
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
-          const response = await axios.get("/auth/profile");
-          console.log("getUserProfile response:", response);
+          const response = await axios.get('/auth/profile');
+          console.log('getUserProfile response:', response);
           const { user } = response.data;
 
-          dispatch({
-            type: "INITIALIZE",
-            payload: {
-              isAuthenticated: true,
-              user,
-            },
-          });
+          setTimeout(
+            dispatch({
+              type: 'INITIALIZE',
+              payload: {
+                isAuthenticated: true,
+                user,
+              },
+            }),
+            3000
+          );
         } else if (refreshToken && isValidToken(refreshToken)) {
           // check if refreshToken exists, call refreshToken api
-          const response = await axios.post("/auth/refresh-tokens", {
+          const response = await axios.post('/auth/refresh-tokens', {
             refreshToken,
           });
-          console.log("response refreshToken:", response);
+          console.log('response refreshToken:', response);
 
           setSession(response.data);
 
-          const userProfileResponse = await axios.get("/auth/profile");
-          console.log("response getuserProfile:", userProfileResponse);
+          const userProfileResponse = await axios.get('/auth/profile');
+          console.log('response getuserProfile:', userProfileResponse);
 
           const { user } = userProfileResponse.data;
 
           await dispatch({
-            type: "INITIALIZE",
+            type: 'INITIALIZE',
             payload: {
               isAuthenticated: true,
               user,
@@ -138,7 +141,7 @@ function AuthProvider({ children }) {
           });
         } else {
           dispatch({
-            type: "INITIALIZE",
+            type: 'INITIALIZE',
             payload: {
               isAuthenticated: false,
               user: null,
@@ -148,7 +151,7 @@ function AuthProvider({ children }) {
       } catch (err) {
         console.error(err);
         dispatch({
-          type: "INITIALIZE",
+          type: 'INITIALIZE',
           payload: {
             isAuthenticated: false,
             user: null,
@@ -161,50 +164,50 @@ function AuthProvider({ children }) {
   }, []);
 
   const login = async ({ email, password }) => {
-    const response = await axios.post("/auth/login", {
+    const response = await axios.post('/auth/login', {
       email,
       password,
     });
-    console.log("response login:", response);
+    console.log('response login:', response);
 
     const { tokens, user } = response.data;
 
     setSession(tokens);
     dispatch({
-      type: "LOGIN",
+      type: 'LOGIN',
       payload: {
         user,
       },
     });
 
     if (tokens && user) {
-      toast.success("Login Success", {
-        position: "top-right",
+      toast.success('Login Success', {
+        position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: 'light',
       });
     }
   };
 
   const refresh = async (refreshToken) => {
-    const response = await axios.post("/auth/refresh-tokens", {
+    const response = await axios.post('/auth/refresh-tokens', {
       refreshToken,
     });
-    console.log("response refreshToken:", response);
+    console.log('response refreshToken:', response);
 
-    const userProfileResponse = await axios.get("/auth/profile");
-    console.log("response getuserProfile:", userProfileResponse);
+    const userProfileResponse = await axios.get('/auth/profile');
+    console.log('response getuserProfile:', userProfileResponse);
 
     const { user } = userProfileResponse;
 
     setSession(response);
     dispatch({
-      type: "REFRESH",
+      type: 'REFRESH',
       payload: {
         user,
       },
@@ -212,16 +215,16 @@ function AuthProvider({ children }) {
   };
 
   const registerUser = async ({ email, password, first_name, last_name }) => {
-    const response = await axios.post("/auth/register", {
+    const response = await axios.post('/auth/register', {
       email,
       password,
       first_name,
       last_name,
     });
-    console.log("res registerUser", response.data);
+    console.log('res registerUser', response.data);
 
     dispatch({
-      type: "REGISTER",
+      type: 'REGISTER',
     });
 
     return response.data;
@@ -229,28 +232,28 @@ function AuthProvider({ children }) {
 
   const logout = async () => {
     setSession(null);
-    dispatch({ type: "LOGOUT" });
+    dispatch({ type: 'LOGOUT' });
 
-    toast.success("Logout Success", {
-      position: "top-right",
+    toast.success('Logout Success', {
+      position: 'top-right',
       autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: false,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: 'light',
     });
   };
 
   const resetPassword = async (email) => {
-    console.log("reset Password", email);
-    dispatch({ type: "RESET_PASSWORD" });
+    console.log('reset Password', email);
+    dispatch({ type: 'RESET_PASSWORD' });
   };
 
   const forgotPassword = async (email) => {
-    console.log("forgot Password", email);
-    dispatch({ type: "FORGOT_PASSWORD" });
+    console.log('forgot Password', email);
+    dispatch({ type: 'FORGOT_PASSWORD' });
   };
 
   const updateProfile = () => {};
@@ -259,7 +262,7 @@ function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         ...state,
-        method: "jwt",
+        method: 'jwt',
         login,
         logout,
         registerUser,
