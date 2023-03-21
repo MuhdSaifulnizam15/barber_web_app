@@ -35,7 +35,7 @@ const Staff = () => {
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await dispatch(getAllBranch());
+    await dispatch(getAllBranch({ limit: 50 }));
   }, []);
 
   useEffect(async () => {

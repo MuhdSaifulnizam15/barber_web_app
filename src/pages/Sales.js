@@ -84,7 +84,7 @@ const Sales = () => {
   }, [customerPhoneNumber]);
 
   useEffect(async () => {
-    await dispatch(getAllBranch());
+    await dispatch(getAllBranch({ limit: 50 }));
     await dispatch(getAllStaff());
     await dispatch(getAllServices({ limit: 50 }));
   }, [dispatch]);

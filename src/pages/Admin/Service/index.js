@@ -48,9 +48,11 @@ const Services = () => {
   }, []);
 
   useEffect(async () => {
-    await dispatch(getAllServices({
+    await dispatch(
+      getAllServices({
         page: currentPage,
-      }));
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
@@ -62,8 +64,8 @@ const Services = () => {
     }
   }, [isLoading]);
 
-    useEffect(async () => {
-    console.log("currentPage", currentPage);
+  useEffect(async () => {
+    console.log('currentPage', currentPage);
     await dispatch(
       getAllServices({
         page: currentPage,
@@ -112,18 +114,22 @@ const Services = () => {
       console.log('data', data);
       if (selectedItem) await dispatch(updateService(selectedItem?.id, data));
       else await dispatch(addService(data));
-      await dispatch(getAllServices({
-        page: currentPage,
-      }));
+      await dispatch(
+        getAllServices({
+          page: currentPage,
+        })
+      );
     }
   };
 
   const submitServiceDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteService(id));
-    await dispatch(getAllServices({
+    await dispatch(
+      getAllServices({
         page: currentPage,
-      }));
+      })
+    );
     setShowDeleteModal(false);
     setSelectedItem();
   };
