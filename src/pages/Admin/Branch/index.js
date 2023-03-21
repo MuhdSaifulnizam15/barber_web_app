@@ -6,7 +6,12 @@ import Navbar from 'components/Navbar';
 import Header from 'components/Header';
 import Pagination from 'components/Pagination';
 
-import { addBranch, deleteBranch, updateBranch, getAllBranch } from 'redux/slices/branch';
+import {
+  addBranch,
+  deleteBranch,
+  updateBranch,
+  getAllBranch,
+} from 'redux/slices/branch';
 
 const Branch = () => {
   const [showModal, setShowModal] = useState(false);
@@ -37,9 +42,11 @@ const Branch = () => {
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await dispatch(getAllBranch({
-      page: currentPage
-    }));
+    await dispatch(
+      getAllBranch({
+        page: currentPage,
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
@@ -51,7 +58,7 @@ const Branch = () => {
     }
   }, [isLoading]);
 
-    useEffect(async () => {
+  useEffect(async () => {
     console.log('currentPage', currentPage);
     await dispatch(
       getAllBranch({
@@ -120,17 +127,21 @@ const Branch = () => {
     console.log('data', data);
     if (selected) await dispatch(updateBranch(selected?.id, data));
     else await dispatch(addBranch(data));
-    await dispatch(getAllBranch({
-      page: currentPage
-    }));
+    await dispatch(
+      getAllBranch({
+        page: currentPage,
+      })
+    );
   };
 
   const submitBranchDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteBranch(id));
-    await dispatch(getAllBranch({
-      page: currentPage
-    }));
+    await dispatch(
+      getAllBranch({
+        page: currentPage,
+      })
+    );
     setShowDeleteModal(false);
     setSelected(null);
   };

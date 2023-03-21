@@ -44,7 +44,7 @@ const Services = () => {
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await dispatch(getAllCategories());
+    await dispatch(getAllCategories({ limit: 50 }));
   }, []);
 
   useEffect(async () => {
