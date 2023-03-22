@@ -84,8 +84,8 @@ const Sales = () => {
   }, [customerPhoneNumber]);
 
   useEffect(async () => {
-    await dispatch(getAllBranch());
-    await dispatch(getAllStaff());
+    await dispatch(getAllBranch({ limit: 50 }));
+    await dispatch(getAllStaff({ limit: 50 }));
     await dispatch(getAllServices({ limit: 50 }));
   }, [dispatch]);
 
@@ -413,11 +413,11 @@ const Sales = () => {
                                             {({ selected, active }) => (
                                               <>
                                                 <div className="flex items-center">
-                                                  <img
+                                                  {/* <img
                                                     src={person.avatar}
                                                     alt=""
                                                     className="h-6 w-6 flex-shrink-0 rounded-full"
-                                                  />
+                                                  /> */}
                                                   <span
                                                     className={classNames(
                                                       selected
