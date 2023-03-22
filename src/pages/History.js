@@ -76,6 +76,8 @@ const History = () => {
       getAllSales({
         page: currentPage,
         userId: user?.role === 'staff' ? user?.id : '',
+        start_date: startDate.length > 0 ? startDate[0] : '',
+        end_date: startDate.length > 0 ? startDate[1] : '',
       })
     );
   }, [currentPage]);
@@ -86,6 +88,7 @@ const History = () => {
       await dispatch(
         getAllSales({
           page: 1,
+          userId: user?.role === 'staff' ? user?.id : '',
           start_date: startDate.length > 0 ? startDate[0] : '',
           end_date: startDate.length > 0 ? startDate[1] : '',
         })
@@ -131,6 +134,8 @@ const History = () => {
       getAllSales({
         page: currentPage,
         userId: user?.role === 'staff' ? user?.id : '',
+        start_date: startDate.length > 0 ? startDate[0] : '',
+        end_date: startDate.length > 0 ? startDate[1] : '',
       })
     );
     setShowDeleteModal(false);
