@@ -251,7 +251,7 @@ const Transaction = () => {
 
                 <div className="max-w-4xl border border-slate-50 py-2 px-2">
                   <div className="flex row-flex items-center mb-2">
-                    <p className="font-medium text-base text-slate-200">
+                    <p className="font-medium text-base">
                       Start Date:
                       <span className="font-light text-sm">
                         {" " +
@@ -269,7 +269,7 @@ const Transaction = () => {
                   </div>
 
                   <div className="flex row-flex items-center mb-2">
-                    <p className="font-medium text-base text-slate-200">
+                    <p className="font-medium text-base">
                       End Date:
                       <span className="font-light text-sm">
                         {" " +
