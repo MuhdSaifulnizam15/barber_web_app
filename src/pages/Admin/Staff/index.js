@@ -26,6 +26,7 @@ const Staff = () => {
   const [selectedBranch, setSelectedBranch] = useState();
   const [name, setName] = useState();
   const [email, setEmail] = useState();
+  const [totalSale, setTotalSale] = useState(0);
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [password, setPassword] = useState();
@@ -100,6 +101,10 @@ const Staff = () => {
         setPassword(event.target.value);
         break;
 
+      case 'total_sale':
+        setTotalSale(event.target.value);
+        break;
+
       case 'staff_first_name':
         setFirstName(event.target.value);
         break;
@@ -124,6 +129,7 @@ const Staff = () => {
     setSelectedItem();
     setSelectedBranch();
     setShowModal(false);
+    setTotalSale(0);
   };
 
   const submitForm = async (event) => {
@@ -143,18 +149,22 @@ const Staff = () => {
       console.log('data', data);
       if (selectedItem) await dispatch(updateStaff(selectedItem?.id, data));
       else await dispatch(addStaff(data));
-      await dispatch(getAllStaff({
-        page: currentPage,
-      }));
+      await dispatch(
+        getAllStaff({
+          page: currentPage,
+        })
+      );
     }
   };
 
   const submitStaffDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteStaff(id));
-    await dispatch(getAllStaff({
+    await dispatch(
+      getAllStaff({
         page: currentPage,
-    }));
+      })
+    );
     setShowDeleteModal(false);
     setSelectedItem();
   };
@@ -240,7 +250,7 @@ const Staff = () => {
                             id='password'
                             disabled={viewMode}
                             className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700'
-                            placeholder='Enter Staff Name'
+                            placeholder='Enter Staff Password'
                             onChange={handleEventChange}
                             value={password}
                           />
@@ -294,6 +304,24 @@ const Staff = () => {
                           value={phoneNo}
                         />
                       </div>
+
+                      {viewMode && selectedItem ? (
+                        <div className='relative px-6 pb-6 flex-auto'>
+                          <label className='block text-sm font-medium text-gray-700 mb-2'>
+                            Total Sales (RM)
+                          </label>
+                          <input
+                            type='text'
+                            name='total_sales'
+                            id='total_sales'
+                            disabled={viewMode}
+                            className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm text-gray-700'
+                            placeholder='Enter Total Sales'
+                            onChange={handleEventChange}
+                            value={totalSale}
+                          />
+                        </div>
+                      ) : null}
 
                       <div className='relative px-6 pb-10 flex-auto'>
                         <Listbox
@@ -505,7 +533,7 @@ const Staff = () => {
                       </thead>
                       <tbody className='bg-white'>
                         {staff.docs ? (
-                          staff.docs.map((item) => (
+                          staff.docs.map((item, index) => (
                             <tr key={item.id}>
                               <td className='px-6 py-4 whitespace-no-wrap border-b border-gray-200'>
                                 <div className='flex items-center'>
@@ -530,6 +558,7 @@ const Staff = () => {
                                     setFirstName(item?.user_id?.first_name);
                                     setLastName(item?.user_id?.last_name);
                                     setEmail(item?.user_id?.email);
+                                    setTotalSale(staff?.totalSale[index]?.sale || 0);
                                   }}
                                 >
                                   <svg
