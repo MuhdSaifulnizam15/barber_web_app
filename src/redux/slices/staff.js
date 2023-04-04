@@ -1,9 +1,9 @@
-import { map, filter } from "lodash";
-import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
+import { map, filter } from 'lodash';
+import { createSlice } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 // utils
-import axios from "utils/axios";
+import axios from 'utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -11,10 +11,19 @@ const initialState = {
   isLoading: false,
   error: false,
   staff: [],
+  currPage: 0,
+  pagingCounter: 0,
+  totalPages: 0,
+  totalDocs: 0,
+  limit: 10,
+  hasPrevPage: false,
+  hasNextPage: true,
+  prevPage: null,
+  nextPage: null,
 };
 
 const slice = createSlice({
-  name: "staff",
+  name: 'staff',
   initialState,
   reducers: {
     // START LOADING
@@ -32,6 +41,14 @@ const slice = createSlice({
     getStaffSuccess(state, action) {
       state.isLoading = false;
       state.staff = action.payload;
+      state.currPage = action.payload?.page;
+      state.totalDocs = action.payload?.totalDocs;
+      state.pagingCounter = action.payload?.pagingCounter;
+      state.hasPrevPage = action.payload?.hasPrevPage;
+      state.hasNextPage = action.payload?.hasNextPage;
+      state.prevPage = action.payload?.prevPage;
+      state.nextPage = action.payload?.nextPage;
+      state.totalPages = action.payload?.totalPages;
     },
 
     // ADD STAFF
@@ -58,12 +75,12 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllStaff() {
+export function getAllStaff({ page = 1, limit = 10 }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get("/staff");
-      console.log("response", response.data);
+      const response = await axios.get(`/staff?page=${page}&limit=${limit}`);
+      console.log('response', response.data);
       dispatch(slice.actions.getStaffSuccess(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -75,19 +92,19 @@ export function addStaff(data) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.post("/staff", data);
-      console.log("response", response.data);
+      const response = await axios.post('/staff', data);
+      console.log('response', response.data);
       dispatch(slice.actions.addStaffSuccess(response.data.staff));
 
-      toast.success("Staff successfully added", {
-        position: "top-right",
+      toast.success('Staff successfully added', {
+        position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: 'light',
       });
     } catch (error) {
       console.log(error);
@@ -101,18 +118,18 @@ export function deleteStaff(id) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.post(`/staff/delete/${id}`);
-      console.log("response", response.data);
+      console.log('response', response.data);
       dispatch(slice.actions.deleteStaffSuccess(response.data));
 
       toast.success(response.data.message, {
-        position: "top-right",
+        position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: 'light',
       });
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -125,18 +142,18 @@ export function updateStaff(id, data) {
     dispatch(slice.actions.startLoading());
     try {
       const response = await axios.post(`/staff/update/${id}`, data);
-      console.log("response", response.data);
+      console.log('response', response.data);
       dispatch(slice.actions.updateStaffSuccess(response.data));
 
-      toast.success("Staff successfully updated", {
-        position: "top-right",
+      toast.success('Staff successfully updated', {
+        position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: 'light',
       });
     } catch (error) {
       dispatch(slice.actions.hasError(error));
