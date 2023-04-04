@@ -91,7 +91,8 @@ const Branch = () => {
         break;
 
       case 'phone_no':
-        setPhoneNo(event.target.value);
+        const validated = event.target.value.match(/^(\d*\.{0,1}\d{0,2}$)/);
+        if (validated) setPhoneNo(event.target.value);
         break;
 
       default:
