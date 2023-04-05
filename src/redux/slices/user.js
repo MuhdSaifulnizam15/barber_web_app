@@ -121,7 +121,7 @@ export function changePassword(data) {
     try {
       const response = await axios.post('/auth/change-password', data);
       console.log('response', response.data);
-      dispatch(slice.actions.changePasswordSuccess(response.data.branch));
+      dispatch(slice.actions.changePasswordSuccess());
 
       toast.success(response.data.message, {
         position: 'top-right',
@@ -136,6 +136,71 @@ export function changePassword(data) {
     } catch (error) {
       console.log(error);
       dispatch(slice.actions.hasError(error));
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+  };
+}
+
+export function resetPassword(data) {
+  return async (dispatch) => {
+    try {
+      const response = await axios.post('/auth/reset-password', data);
+      console.log('response', response.data);
+
+      toast.success(response.data.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+  };
+}
+
+export function forgotPassword(data) {
+  return async (dispatch) => {
+    try {
+      const response = await axios.post('/auth/forgot-password', data);
+      console.log('response', response.data);
+
+      toast.success(response.data.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
       toast.error(error.message, {
         position: 'top-right',
         autoClose: 3000,
