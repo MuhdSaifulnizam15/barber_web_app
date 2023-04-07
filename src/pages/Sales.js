@@ -30,7 +30,7 @@ const Sales = () => {
   const [selectedFreebie, setSelectedFreebie] = useState({});
   const [isSelectedBranchDisabled, setIsSelectedBranchDisabled] =
     useState(false);
-  const [isSelectedStaffDisabled, setIsSelectedStaffDisabled] = useState(false);
+  const [isSelectedStaffDisabled, setIsSelectedStaffDisabled] = useState(true);
 
   const [total, setTotal] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
@@ -60,12 +60,7 @@ const Sales = () => {
     if (user && user?.role !== 'admin') {
       // disabled branch selection (allow only on the respective branch)
       setIsSelectedBranchDisabled(true);
-
-      if (user?.role === 'staff') setIsSelectedStaffDisabled(true);
-
       await dispatch(getStaffById(user?.id));
-    } else {
-      setIsSelectedBranchDisabled(false);
     }
   }, [user]);
 
@@ -79,6 +74,18 @@ const Sales = () => {
       getAllStaff({ limit: 50, branch: staff_info?.branch_id?.id })
     );
   }, [staff_info]);
+
+  useEffect(async () => {
+    if (selectedBranch && selectedBranch.hasOwnProperty('name')) {
+      setIsSelectedStaffDisabled(false);
+      setSelectedStaff({})
+      await dispatch(
+        getAllStaff({ limit: 50, branch: selectedBranch?.id })
+      );
+    } else {
+      setIsSelectedStaffDisabled(true);
+    }
+  }, [selectedBranch]);
 
   useEffect(() => {
     // const newTotal = selectedService
@@ -122,8 +129,6 @@ const Sales = () => {
   useEffect(async () => {
     await dispatch(getAllBranch({ limit: 50 }));
     await dispatch(getAllServices({ limit: 50 }));
-    console.log('first', user?.role === 'admin')
-    if (user?.role === 'admin') await dispatch(getAllStaff({ limit: 50 }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -221,11 +226,14 @@ const Sales = () => {
     setTotal(0);
     setSelectedService([]);
     setSelectedStaff({});
-    setSelectedBranch({});
     setCustomerName('');
     setCustomerPhoneNum('');
     setSelectedFreebie({});
     setSelectedCustomer({});
+    if(user?.role === 'admin') {
+      setIsSelectedStaffDisabled(true);
+      setSelectedBranch({});
+    }
   };
 
   const submitForm = async (event) => {
