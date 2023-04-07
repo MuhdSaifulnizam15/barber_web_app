@@ -11,6 +11,7 @@ const initialState = {
   isLoading: false,
   error: false,
   staff: [],
+  staff_info: {},
   currPage: 0,
   pagingCounter: 0,
   totalPages: 0,
@@ -51,6 +52,12 @@ const slice = createSlice({
       state.totalPages = action.payload?.totalPages;
     },
 
+    // GET ALL STAFF
+    getStaffInfoSuccess(state, action) {
+      state.isLoading = false;
+      state.staff_info = action.payload;
+    },
+
     // ADD STAFF
     addStaffSuccess(state, action) {
       state.isLoading = false;
@@ -82,6 +89,19 @@ export function getAllStaff({ page = 1, limit = 10 }) {
       const response = await axios.get(`/staff?page=${page}&limit=${limit}`);
       console.log('response', response.data);
       dispatch(slice.actions.getStaffSuccess(response.data.result));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getStaffById(id) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/staff/user/${id}`);
+      console.log('response', response.data);
+      dispatch(slice.actions.getStaffInfoSuccess(response.data.staff));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

@@ -12,10 +12,12 @@ import freebieData from 'data/freebies';
 
 import { classNames } from 'utils/helper';
 
+import useAuth from 'hooks/useAuth';
+
 import { useDispatch, useSelector } from 'redux/store';
 
 import { getAllBranch } from 'redux/slices/branch';
-import { getAllStaff } from 'redux/slices/staff';
+import { getAllStaff, getStaffById } from 'redux/slices/staff';
 import { getAllServices } from 'redux/slices/services';
 import { getCustomerByPhoneNo } from 'redux/slices/customer';
 import { addSales } from 'redux/slices/sales';
@@ -26,6 +28,9 @@ const Sales = () => {
   const [selectedBranch, setSelectedBranch] = useState();
   const [selectedCustomer, setSelectedCustomer] = useState({});
   const [selectedFreebie, setSelectedFreebie] = useState({});
+  const [isSelectedBranchDisabled, setIsSelectedBranchDisabled] =
+    useState(false);
+  const [isSelectedStaffDisabled, setIsSelectedStaffDisabled] = useState(false);
 
   const [total, setTotal] = useState(0);
   const [subTotal, setSubTotal] = useState(0);
@@ -38,11 +43,39 @@ const Sales = () => {
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
 
   const { branch } = useSelector((state) => state.branch);
-  const { staff } = useSelector((state) => state.staff);
+  const { staff, staff_info } = useSelector((state) => state.staff);
   const { services } = useSelector((state) => state.services);
   const { customer } = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    resetForm();
+  }, []);
+
+  useEffect(async () => {
+    console.log('user', user);
+    if (user && user?.role !== 'admin') {
+      // disabled branch selection (allow only on the respective branch)
+      setIsSelectedBranchDisabled(true);
+
+      if (user?.role === 'staff') setIsSelectedStaffDisabled(true);
+
+      await dispatch(getStaffById(user?.id));
+    } else {
+      setIsSelectedBranchDisabled(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (staff_info && staff_info?.user_id?.id === user.id) {
+      console.log('staff info', staff_info);
+      if (user?.role === 'staff') setSelectedStaff(staff_info);
+      setSelectedBranch(staff_info?.branch_id);
+    }
+  }, [staff_info]);
 
   useEffect(() => {
     // const newTotal = selectedService
@@ -256,6 +289,7 @@ const Sales = () => {
                           <Listbox
                             value={selectedBranch}
                             onChange={setSelectedBranch}
+                            disabled={isSelectedBranchDisabled}
                           >
                             {({ open }) => (
                               <>
@@ -268,13 +302,17 @@ const Sales = () => {
                                       <span
                                         className='ml-3 block truncate text-gray-700'
                                         style={
-                                          !selectedBranch?.name
-                                            ? { color: 'red' }
-                                            : { color: 'black' }
+                                          selectedBranch?.name
+                                            ? { color: 'black' }
+                                            : isSelectedBranchDisabled
+                                            ? { color: 'black' }
+                                            : { color: 'red' }
                                         }
                                       >
                                         {selectedBranch?.name
-                                          ? selectedBranch.name
+                                          ? selectedBranch?.name
+                                          : isSelectedBranchDisabled
+                                          ? selectedBranch?.name || 'Staff Name'
                                           : 'Select Branch'}
                                       </span>
                                     </span>
@@ -354,6 +392,7 @@ const Sales = () => {
                           <Listbox
                             value={selectedStaff}
                             onChange={setSelectedStaff}
+                            disabled={isSelectedStaffDisabled}
                           >
                             {({ open }) => (
                               <>
@@ -373,13 +412,22 @@ const Sales = () => {
                                       <span
                                         className='ml-3 block truncate text-gray-700'
                                         style={
-                                          !selectedStaff?.full_name
-                                            ? { color: 'red' }
-                                            : { color: 'black' }
+                                          selectedStaff?.full_name
+                                            ? { color: 'black' }
+                                            : isSelectedStaffDisabled
+                                            ? user?.role === 'staff'
+                                              ? { color: 'black' }
+                                              : { color: 'red' }
+                                            : { color: 'red' }
                                         }
                                       >
                                         {selectedStaff?.full_name
-                                          ? selectedStaff.full_name
+                                          ? selectedStaff?.full_name
+                                          : isSelectedStaffDisabled
+                                          ? user?.role === 'staff'
+                                            ? selectedStaff?.full_name ||
+                                              'Staff Name'
+                                            : 'Select Staff'
                                           : 'Select Staff'}
                                       </span>
                                     </span>
