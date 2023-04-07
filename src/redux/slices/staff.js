@@ -52,7 +52,7 @@ const slice = createSlice({
       state.totalPages = action.payload?.totalPages;
     },
 
-    // GET ALL STAFF
+    // GET STAFF INFO
     getStaffInfoSuccess(state, action) {
       state.isLoading = false;
       state.staff_info = action.payload;

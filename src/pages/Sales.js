@@ -43,24 +43,23 @@ const Sales = () => {
   const [customerPhoneNumber, setCustomerPhoneNum] = useState();
 
   const { branch } = useSelector((state) => state.branch);
-  const { staff, staff_info } = useSelector((state) => state.staff);
+  const { staff } = useSelector((state) => state.staff);
   const { services } = useSelector((state) => state.services);
   const { customer } = useSelector((state) => state.customer);
 
   const dispatch = useDispatch();
 
-  const { user } = useAuth();
+  const { user, staff: staff_info } = useAuth();
 
   useEffect(() => {
     resetForm();
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     console.log('user', user);
     if (user && user?.role !== 'admin') {
       // disabled branch selection (allow only on the respective branch)
       setIsSelectedBranchDisabled(true);
-      await dispatch(getStaffById(user?.id));
     }
   }, [user]);
 
@@ -76,12 +75,14 @@ const Sales = () => {
   }, [staff_info]);
 
   useEffect(async () => {
-    if (selectedBranch && selectedBranch.hasOwnProperty('name') && user?.role !== 'staff') {
+    if (
+      selectedBranch &&
+      selectedBranch.hasOwnProperty('name') &&
+      user?.role !== 'staff'
+    ) {
       setIsSelectedStaffDisabled(false);
-      setSelectedStaff({})
-      await dispatch(
-        getAllStaff({ limit: 50, branch: selectedBranch?.id })
-      );
+      setSelectedStaff({});
+      await dispatch(getAllStaff({ limit: 50, branch: selectedBranch?.id }));
     } else {
       setIsSelectedStaffDisabled(true);
     }
@@ -225,12 +226,12 @@ const Sales = () => {
     console.log('resetForm');
     setTotal(0);
     setSelectedService([]);
-    setSelectedStaff({});
+    if (user?.role !== 'staff') setSelectedStaff({});
     setCustomerName('');
     setCustomerPhoneNum('');
     setSelectedFreebie({});
     setSelectedCustomer({});
-    if(user?.role === 'admin') {
+    if (user?.role === 'admin') {
       setIsSelectedStaffDisabled(true);
       setSelectedBranch({});
     }
