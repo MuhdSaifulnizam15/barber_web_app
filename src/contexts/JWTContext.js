@@ -11,26 +11,29 @@ const initialState = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
+  staff: null,
   token: null,
 };
 
 const handlers = {
   INITIALIZE: (state, action) => {
-    const { isAuthenticated, user } = action.payload;
+    const { isAuthenticated, user, staff } = action.payload;
     return {
       ...state,
       isAuthenticated,
       isInitialized: true,
       user,
+      staff,
     };
   },
   LOGIN: (state, action) => {
-    const { user } = action.payload;
+    const { user, staff } = action.payload;
 
     return {
       ...state,
       isAuthenticated: true,
       user,
+      staff,
     };
   },
   REFRESH: (state, action) => {
@@ -46,12 +49,14 @@ const handlers = {
     ...state,
     isAuthenticated: false,
     user: null,
+    staff: null,
   }),
   REGISTER: (state, action) => {
     return {
       ...state,
       isAuthenticated: false,
       user: null,
+      staff: null,
     };
   },
   FORGOT_PASSWORD: (state, action) => {
@@ -61,6 +66,7 @@ const handlers = {
       ...state,
       isAuthenticated: false,
       user: null,
+      staff: null,
     };
   },
   RESET_PASSWORD: (state, action) => {
@@ -70,6 +76,7 @@ const handlers = {
       ...state,
       isAuthenticated: false,
       user: null,
+      staff: null,
     };
   },
 };
@@ -106,7 +113,7 @@ function AuthProvider({ children }) {
 
           const response = await axios.get('/auth/profile');
           console.log('getUserProfile response:', response);
-          const { user } = response.data;
+          const { user, staff } = response.data;
 
           setTimeout(
             dispatch({
@@ -114,6 +121,7 @@ function AuthProvider({ children }) {
               payload: {
                 isAuthenticated: true,
                 user,
+                staff,
               },
             }),
             3000
@@ -130,13 +138,14 @@ function AuthProvider({ children }) {
           const userProfileResponse = await axios.get('/auth/profile');
           console.log('response getuserProfile:', userProfileResponse);
 
-          const { user } = userProfileResponse.data;
+          const { user, staff } = userProfileResponse.data;
 
           await dispatch({
             type: 'INITIALIZE',
             payload: {
               isAuthenticated: true,
               user,
+              staff,
             },
           });
         } else {
@@ -145,6 +154,7 @@ function AuthProvider({ children }) {
             payload: {
               isAuthenticated: false,
               user: null,
+              staff: null,
             },
           });
         }
@@ -155,6 +165,7 @@ function AuthProvider({ children }) {
           payload: {
             isAuthenticated: false,
             user: null,
+            staff: null,
           },
         });
       }
@@ -170,13 +181,14 @@ function AuthProvider({ children }) {
     });
     console.log('response login:', response);
 
-    const { tokens, user } = response.data;
+    const { tokens, user, staff } = response.data;
 
     setSession(tokens);
     dispatch({
       type: 'LOGIN',
       payload: {
         user,
+        staff,
       },
     });
 
