@@ -69,12 +69,15 @@ const Sales = () => {
     }
   }, [user]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (staff_info && staff_info?.user_id?.id === user.id) {
       console.log('staff info', staff_info);
       if (user?.role === 'staff') setSelectedStaff(staff_info);
       setSelectedBranch(staff_info?.branch_id);
     }
+    await dispatch(
+      getAllStaff({ limit: 50, branch: staff_info?.branch_id?.id })
+    );
   }, [staff_info]);
 
   useEffect(() => {
@@ -118,8 +121,9 @@ const Sales = () => {
 
   useEffect(async () => {
     await dispatch(getAllBranch({ limit: 50 }));
-    await dispatch(getAllStaff({ limit: 50 }));
     await dispatch(getAllServices({ limit: 50 }));
+    console.log('first', user?.role === 'admin')
+    if (user?.role === 'admin') await dispatch(getAllStaff({ limit: 50 }));
   }, [dispatch]);
 
   useEffect(() => {

@@ -82,11 +82,11 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllStaff({ page = 1, limit = 10 }) {
+export function getAllStaff({ page = 1, limit = 10, branch = '' }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/staff?page=${page}&limit=${limit}`);
+      const response = await axios.get(`/staff?page=${page}&limit=${limit}${branch !== '' ? '&branch_id=' + branch : null}`);
       console.log('response', response.data);
       dispatch(slice.actions.getStaffSuccess(response.data.result));
     } catch (error) {
