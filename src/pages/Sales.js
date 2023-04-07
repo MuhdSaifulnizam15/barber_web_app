@@ -76,7 +76,7 @@ const Sales = () => {
   }, [staff_info]);
 
   useEffect(async () => {
-    if (selectedBranch && selectedBranch.hasOwnProperty('name')) {
+    if (selectedBranch && selectedBranch.hasOwnProperty('name') && user?.role !== 'staff') {
       setIsSelectedStaffDisabled(false);
       setSelectedStaff({})
       await dispatch(
