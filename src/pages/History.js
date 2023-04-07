@@ -47,13 +47,16 @@ const History = () => {
   } = useSelector((state) => state.sales);
   const dispatch = useDispatch();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, staff } = useAuth();
 
   useEffect(async () => {
     if (user)
       await dispatch(
         getAllSales({
           userId: user?.role === 'staff' ? user?.id : '',
+          branchId:
+            user?.role !== 'admin' ? staff?.branch_id?.id : '',
+
           start_date: startDate.length > 0 ? startDate[0] : '',
           end_date: startDate.length > 0 ? startDate[1] : '',
         })
@@ -76,6 +79,9 @@ const History = () => {
       getAllSales({
         page: currentPage,
         userId: user?.role === 'staff' ? user?.id : '',
+        branchId:
+          user?.role !== 'admin' ? staff?.branch_id?.id : '',
+
         start_date: startDate.length > 0 ? startDate[0] : '',
         end_date: startDate.length > 0 ? startDate[1] : '',
       })
@@ -89,6 +95,9 @@ const History = () => {
         getAllSales({
           page: 1,
           userId: user?.role === 'staff' ? user?.id : '',
+          branchId:
+            user?.role !== 'admin' ? staff?.branch_id?.id : '',
+
           start_date: startDate.length > 0 ? startDate[0] : '',
           end_date: startDate.length > 0 ? startDate[1] : '',
         })
@@ -134,6 +143,8 @@ const History = () => {
       getAllSales({
         page: currentPage,
         userId: user?.role === 'staff' ? user?.id : '',
+        branchId:
+          user?.role !== 'admin' ? staff?.branch_id?.id : '',
         start_date: startDate.length > 0 ? startDate[0] : '',
         end_date: startDate.length > 0 ? startDate[1] : '',
       })

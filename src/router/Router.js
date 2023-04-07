@@ -1,24 +1,24 @@
-import { Suspense, lazy } from "react";
-import { Navigate, useRoutes, useLocation } from "react-router-dom";
+import { Suspense, lazy } from 'react';
+import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 
-import GuestGuard from "guards/GuestGuard";
-import AuthGuard from "guards/AuthGuard";
-import RoleBasedGuard from "guards/RoleBasedGuard";
+import GuestGuard from 'guards/GuestGuard';
+import AuthGuard from 'guards/AuthGuard';
+import RoleBasedGuard from 'guards/RoleBasedGuard';
 
-import { PATH_PAGE } from "router/routes";
+import { PATH_PAGE } from 'router/routes';
 
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => (props) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { pathname } = useLocation();
-  const isDashboard = pathname.includes("/admin");
+  const isDashboard = pathname.includes('/admin');
 
   return (
     <Suspense
       fallback={
-        <div className="h-screen flex items-center justify-center">
-          <div className="w-20 h-20 rounded-full animate-spin border-6 border-solid border-blue-500 border-t-transparent" />
+        <div className='h-screen flex items-center justify-center'>
+          <div className='w-20 h-20 rounded-full animate-spin border-6 border-solid border-blue-500 border-t-transparent' />
         </div>
       }
     >
@@ -30,10 +30,10 @@ const Loadable = (Component) => (props) => {
 export default function Router() {
   return useRoutes([
     {
-      path: "auth",
+      path: 'auth',
       children: [
         {
-          path: "login",
+          path: 'login',
           element: (
             <GuestGuard>
               <Login />
@@ -41,7 +41,7 @@ export default function Router() {
           ),
         },
         {
-          path: "register",
+          path: 'register',
           element: (
             <GuestGuard>
               <Register />
@@ -49,19 +49,27 @@ export default function Router() {
           ),
         },
         {
-          path: "reset-password",
+          path: 'reset-password',
           element: (
             <GuestGuard>
-              <ResetPassword />{" "}
+              <ResetPassword />{' '}
             </GuestGuard>
           ),
         },
         {
-          path: "forgot-password",
+          path: 'forgot-password',
           element: (
             <GuestGuard>
               <ForgotPassword />
             </GuestGuard>
+          ),
+        },
+        {
+          path: 'change-password',
+          element: (
+            <AuthGuard>
+              <ChangePassword />
+            </AuthGuard>
           ),
         },
       ],
@@ -69,13 +77,13 @@ export default function Router() {
 
     // Dashboard Routes
     {
-      path: "admin",
+      path: 'admin',
       // element: <RoleBasedGuard />,
       children: [
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
         // { path: "dashboard", element: <Dashboard /> },
         {
-          path: "user",
+          path: 'user',
           element: (
             <AuthGuard>
               <Users />
@@ -83,7 +91,7 @@ export default function Router() {
           ),
         },
         {
-          path: "category",
+          path: 'category',
           element: (
             <AuthGuard>
               <Categories />
@@ -91,7 +99,7 @@ export default function Router() {
           ),
         },
         {
-          path: "services",
+          path: 'services',
           element: (
             <AuthGuard>
               <Services />
@@ -99,7 +107,7 @@ export default function Router() {
           ),
         },
         {
-          path: "branch",
+          path: 'branch',
           element: (
             <AuthGuard>
               <Branch />
@@ -107,7 +115,7 @@ export default function Router() {
           ),
         },
         {
-          path: "staff",
+          path: 'staff',
           element: (
             <AuthGuard>
               <Staff />
@@ -115,7 +123,7 @@ export default function Router() {
           ),
         },
         {
-          path: "customer",
+          path: 'customer',
           element: (
             <AuthGuard>
               <Customer />
@@ -127,23 +135,23 @@ export default function Router() {
 
     // Main Routes
     {
-      path: "*",
+      path: '*',
       // element: <LogoOnlyLayout />,
       children: [
         // { path: 'coming-soon', element: <ComingSoon /> },
         // { path: 'maintenance', element: <Maintenance /> },
         // { path: '500', element: <Page500 /> },
-        { path: "404", element: <NotFound /> },
-        { path: "*", element: <Navigate to="/404" replace /> },
+        { path: '404', element: <NotFound /> },
+        { path: '*', element: <Navigate to='/404' replace /> },
       ],
     },
     {
-      path: "/",
+      path: '/',
       // element: <AuthGuard />,
       children: [
         // { element: <Navigate to={PATH_PAGE.sales} replace /> },
         {
-          path: "history",
+          path: 'history',
           element: (
             <AuthGuard>
               <History />
@@ -151,7 +159,7 @@ export default function Router() {
           ),
         },
         {
-          path: "profile",
+          path: 'profile',
           element: (
             <AuthGuard>
               <Profile />
@@ -159,7 +167,7 @@ export default function Router() {
           ),
         },
         {
-          path: "sales",
+          path: 'sales',
           element: (
             <AuthGuard>
               <Sales />
@@ -167,47 +175,50 @@ export default function Router() {
           ),
         },
         {
-          path: "transactions",
+          path: 'transactions',
           element: (
             <AuthGuard>
               <Transaction />
             </AuthGuard>
           ),
         },
-        { path: "/", element: <Navigate to="/sales" replace /> },
+        { path: '/', element: <Navigate to='/sales' replace /> },
       ],
     },
-    { path: "*", element: <Navigate to="/404" replace /> },
+    { path: '*', element: <Navigate to='/404' replace /> },
   ]);
 }
 
 // IMPORT PAGES
 
 // Authentication
-const Login = Loadable(lazy(() => import("pages/Auth/Login")));
-const Register = Loadable(lazy(() => import("pages/Auth/Register")));
-const ResetPassword = Loadable(lazy(() => import("pages/Auth/ResetPassword")));
+const Login = Loadable(lazy(() => import('pages/Auth/Login')));
+const Register = Loadable(lazy(() => import('pages/Auth/Register')));
+const ResetPassword = Loadable(lazy(() => import('pages/Auth/ResetPassword')));
 const ForgotPassword = Loadable(
-  lazy(() => import("pages/Auth/ForgotPassword"))
+  lazy(() => import('pages/Auth/ForgotPassword'))
+);
+const ChangePassword = Loadable(
+  lazy(() => import('pages/Auth/ChangePassword'))
 );
 
 // Main
-const History = Loadable(lazy(() => import("pages/History")));
-const Profile = Loadable(lazy(() => import("pages/Profile")));
-const Sales = Loadable(lazy(() => import("pages/Sales")));
-const Transaction = Loadable(lazy(() => import("pages/Transaction")));
+const History = Loadable(lazy(() => import('pages/History')));
+const Profile = Loadable(lazy(() => import('pages/Profile')));
+const Sales = Loadable(lazy(() => import('pages/Sales')));
+const Transaction = Loadable(lazy(() => import('pages/Transaction')));
 
 // Admin
-const Dashboard = Loadable(lazy(() => import("pages/Admin/Dashboard")));
-const Users = Loadable(lazy(() => import("pages/Admin/User")));
-const Categories = Loadable(lazy(() => import("pages/Admin/Category")));
-const Services = Loadable(lazy(() => import("pages/Admin/Service")));
-const Branch = Loadable(lazy(() => import("pages/Admin/Branch")));
-const Staff = Loadable(lazy(() => import("pages/Admin/Staff")));
-const Customer = Loadable(lazy(() => import("pages/Admin/Customer")));
+const Dashboard = Loadable(lazy(() => import('pages/Admin/Dashboard')));
+const Users = Loadable(lazy(() => import('pages/Admin/User')));
+const Categories = Loadable(lazy(() => import('pages/Admin/Category')));
+const Services = Loadable(lazy(() => import('pages/Admin/Service')));
+const Branch = Loadable(lazy(() => import('pages/Admin/Branch')));
+const Staff = Loadable(lazy(() => import('pages/Admin/Staff')));
+const Customer = Loadable(lazy(() => import('pages/Admin/Customer')));
 
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
-const NotFound = Loadable(lazy(() => import("pages/404")));
+const NotFound = Loadable(lazy(() => import('pages/404')));
 // const Maintenance = Loadable(lazy(() => import('pages/Maintenance')));
 // const Page500 = Loadable(lazy(() => import('pages/Page500')));

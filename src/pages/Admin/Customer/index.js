@@ -75,7 +75,8 @@ const Customer = () => {
         break;
 
       case 'customer_phone_no':
-        setPhoneNo(event.target.value);
+        const validated = event.target.value.match(/^(\d*\.{0,1}\d{0,2}$)/);
+        if (validated) setPhoneNo(event.target.value);
         break;
 
       case 'total_membership_point':
@@ -120,17 +121,21 @@ const Customer = () => {
 
     if (selected) await dispatch(updateCustomer(selected?.id, data));
     else await dispatch(addCustomer(data));
-    await dispatch(getAllCustomer({
+    await dispatch(
+      getAllCustomer({
         page: currentPage,
-    }));
+      })
+    );
   };
 
   const submitCustomerDeletion = async (id) => {
     console.log(id);
     await dispatch(deleteCustomer(id));
-    await dispatch(getAllCustomer({
+    await dispatch(
+      getAllCustomer({
         page: currentPage,
-    }));
+      })
+    );
     setShowDeleteModal(false);
     setSelected(null);
   };
