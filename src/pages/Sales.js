@@ -64,7 +64,7 @@ const Sales = () => {
   }, [user]);
 
   useEffect(async () => {
-    if (staff_info && staff_info?.user_id?.id === user.id) {
+    if (staff_info) {
       console.log('staff info', staff_info);
       if (user?.role === 'staff') setSelectedStaff(staff_info);
       setSelectedBranch(staff_info?.branch_id);

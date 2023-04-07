@@ -10,6 +10,8 @@ import Pagination from 'components/Pagination';
 
 import { classNames } from 'utils/helper';
 
+import useAuth from 'hooks/useAuth';
+
 import {
   getAllStaff,
   addStaff,
@@ -32,6 +34,8 @@ const Staff = () => {
   const [password, setPassword] = useState();
   const [phoneNo, setPhoneNo] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSelectedBranchDisabled, setIsSelectedBranchDisabled] =
+    useState(false);
 
   const {
     staff,
@@ -49,17 +53,25 @@ const Staff = () => {
   const { branch } = useSelector((state) => state.branch);
   const dispatch = useDispatch();
 
+  const { user, staff: staff_info } = useAuth();
+
   useEffect(async () => {
-    await dispatch(getAllBranch({ limit: 50 }));
-  }, []);
+    console.log('user', user);
+    if (user && user?.role !== 'admin') {
+      // disabled branch selection (allow only on the respective branch)
+      setIsSelectedBranchDisabled(true);
+      setSelectedBranch(staff_info?.branch_id);
+    } else await dispatch(getAllBranch({ limit: 50 }));
+  }, [user]);
 
   useEffect(async () => {
     await dispatch(
       getAllStaff({
         page: currentPage,
+        branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
       })
     );
-  }, [dispatch]);
+  }, [staff_info]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -75,6 +87,7 @@ const Staff = () => {
     await dispatch(
       getAllStaff({
         page: currentPage,
+        branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
       })
     );
   }, [currentPage]);
@@ -127,9 +140,9 @@ const Staff = () => {
     setLastName();
     setViewMode(false);
     setSelectedItem();
-    setSelectedBranch();
     setShowModal(false);
     setTotalSale(0);
+    if (user?.role === 'admin') setSelectedBranch({});
   };
 
   const submitForm = async (event) => {
@@ -152,6 +165,7 @@ const Staff = () => {
       await dispatch(
         getAllStaff({
           page: currentPage,
+          branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
         })
       );
     }
@@ -163,6 +177,7 @@ const Staff = () => {
     await dispatch(
       getAllStaff({
         page: currentPage,
+        branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
       })
     );
     setShowDeleteModal(false);
@@ -326,7 +341,7 @@ const Staff = () => {
                       <div className='relative px-6 pb-10 flex-auto'>
                         <Listbox
                           value={selectedBranch}
-                          disabled={viewMode}
+                          disabled={viewMode || isSelectedBranchDisabled}
                           onChange={setSelectedBranch}
                         >
                           {({ open }) => (
@@ -340,13 +355,17 @@ const Staff = () => {
                                     <span
                                       className='ml-3 block truncate text-gray-700'
                                       style={
-                                        !selectedBranch?.name
-                                          ? { color: 'red' }
-                                          : { color: 'black' }
+                                        selectedBranch?.name
+                                          ? { color: 'black' }
+                                          : isSelectedBranchDisabled
+                                          ? { color: 'black' }
+                                          : { color: 'red' }
                                       }
                                     >
                                       {selectedBranch?.name
-                                        ? selectedBranch.name
+                                        ? selectedBranch?.name
+                                        : isSelectedBranchDisabled
+                                        ? selectedBranch?.name || 'Branch Name'
                                         : 'Select Branch'}
                                     </span>
                                   </span>
@@ -558,7 +577,9 @@ const Staff = () => {
                                     setFirstName(item?.user_id?.first_name);
                                     setLastName(item?.user_id?.last_name);
                                     setEmail(item?.user_id?.email);
-                                    setTotalSale(staff?.totalSale[index]?.sale || 0);
+                                    setTotalSale(
+                                      staff?.totalSale[index]?.sale || 0
+                                    );
                                   }}
                                 >
                                   <svg
