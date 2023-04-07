@@ -14,12 +14,13 @@ const userNavigation = [
 ];
 
 const navigation = [
-  { name: 'Sales', href: '/sales', current: true, isAdmin: false },
+  { name: 'Sales', href: '/sales', current: true, isAdmin: false, isManager: false, },
   {
     name: 'Transactions',
     href: PATH_PAGE.transaction,
     current: false,
     isAdmin: true,
+    isManager: true,
   },
   // { name: "History", href: "/history", current: false, isAdmin: false },
   // {
@@ -39,30 +40,35 @@ const navigation = [
     href: PATH_ADMIN.branch.root,
     current: false,
     isAdmin: true,
+    isManager: false,
   },
   {
     name: 'Categories',
     href: PATH_ADMIN.category.root,
     current: false,
     isAdmin: true,
+    isManager: true,
   },
   {
     name: 'Services',
     href: PATH_ADMIN.service.root,
     current: false,
     isAdmin: true,
+    isManager: true,
   },
   {
     name: 'Staff',
     href: PATH_ADMIN.staff.root,
     current: false,
     isAdmin: true,
+    isManager: true,
   },
   {
     name: 'Customer',
     href: PATH_ADMIN.customer.root,
     current: false,
     isAdmin: true,
+    isManager: true,
   },
 ];
 
@@ -87,7 +93,7 @@ const Navbar = ({ current = 'Sales' }) => {
                   <div className='ml-10 flex items-baseline space-x-4'>
                     {navigation.map((item) =>
                       item.isAdmin ? (
-                        user?.role == 'admin' && (
+                        (user?.role == 'admin' || (item?.isManager && user?.role == 'manager')) && (
                           <a
                             key={item.name}
                             href={item.href}
@@ -219,7 +225,7 @@ const Navbar = ({ current = 'Sales' }) => {
             <div className='space-y-1 px-2 pt-2 pb-3 sm:px-3'>
               {navigation.map((item) =>
                 item.isAdmin ? (
-                  user?.role == 'admin' && (
+                  (user?.role == 'admin' || (item?.isManager && user?.role == 'manager')) && (
                     <Disclosure.Button
                       key={item.name}
                       as='a'
