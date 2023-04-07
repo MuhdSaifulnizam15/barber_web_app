@@ -18,7 +18,7 @@ const Header = ({ title = "Dashboard", showHistoryBtn = false, showChangePasswor
           <div className="mr-2">
             <button
               type="button"
-              onClick={() => navigate(PATH_PAGE.changePassword)}
+              onClick={() => navigate(PATH_PAGE.history)}
               className="justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-xs font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               History
