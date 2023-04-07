@@ -11,6 +11,7 @@ const initialState = {
   isLoading: false,
   error: false,
   staff: [],
+  staff_info: {},
   currPage: 0,
   pagingCounter: 0,
   totalPages: 0,
@@ -51,6 +52,12 @@ const slice = createSlice({
       state.totalPages = action.payload?.totalPages;
     },
 
+    // GET STAFF INFO
+    getStaffInfoSuccess(state, action) {
+      state.isLoading = false;
+      state.staff_info = action.payload;
+    },
+
     // ADD STAFF
     addStaffSuccess(state, action) {
       state.isLoading = false;
@@ -75,13 +82,33 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getAllStaff({ page = 1, limit = 10 }) {
+export function getAllStaff({ page = 1, limit = 10, branch = '', sortBy = '', }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await axios.get(`/staff?page=${page}&limit=${limit}`);
+      let url = `/staff?page=${page}`;
+      if (limit) url += `&userId=${limit}`;
+      if (sortBy) url += `&sortBy=${sortBy}`;
+      if (branch) url += `&branch_id=${branch}`;
+
+      console.log('url', url);
+
+      const response = await axios.get(url);
       console.log('response', response.data);
       dispatch(slice.actions.getStaffSuccess(response.data.result));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getStaffById(id) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await axios.get(`/staff/user/${id}`);
+      console.log('response', response.data);
+      dispatch(slice.actions.getStaffInfoSuccess(response.data.staff));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -96,7 +123,7 @@ export function addStaff(data) {
       console.log('response', response.data);
       dispatch(slice.actions.addStaffSuccess(response.data.staff));
 
-      toast.success('Staff successfully added', {
+      toast.success(response.data.message, {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
@@ -109,6 +136,16 @@ export function addStaff(data) {
     } catch (error) {
       console.log(error);
       dispatch(slice.actions.hasError(error));
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     }
   };
 }
@@ -133,6 +170,16 @@ export function deleteStaff(id) {
       });
     } catch (error) {
       dispatch(slice.actions.hasError(error));
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     }
   };
 }
