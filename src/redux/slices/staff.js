@@ -123,7 +123,7 @@ export function addStaff(data) {
       console.log('response', response.data);
       dispatch(slice.actions.addStaffSuccess(response.data.staff));
 
-      toast.success('Staff successfully added', {
+      toast.success(response.data.message, {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,
@@ -136,6 +136,16 @@ export function addStaff(data) {
     } catch (error) {
       console.log(error);
       dispatch(slice.actions.hasError(error));
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     }
   };
 }
@@ -160,6 +170,16 @@ export function deleteStaff(id) {
       });
     } catch (error) {
       dispatch(slice.actions.hasError(error));
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
     }
   };
 }
