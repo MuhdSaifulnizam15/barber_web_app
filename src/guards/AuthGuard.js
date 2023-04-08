@@ -34,7 +34,7 @@ export default function AuthGuard({ children }) {
         </div>
       );
     }
-    return <Login />;
+    return <Navigate to={'/auth/login'} replace />;
   }
 
   if (requestedLocation && pathname !== requestedLocation) {

@@ -82,52 +82,52 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_PAGE.sales} replace /> },
         // { path: "dashboard", element: <Dashboard /> },
-        {
-          path: 'user',
-          element: (
-            <AuthGuard>
-              <Users />
-            </AuthGuard>
-          ),
-        },
+        // {
+        //   path: 'user',
+        //   element: (
+        //     <AuthGuard>
+        //       <Users />
+        //     </AuthGuard>
+        //   ),
+        // },
         {
           path: 'category',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin', 'manager']}>
               <Categories />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
         {
           path: 'services',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin', 'manager']}>
               <Services />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
         {
           path: 'branch',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin']}>
               <Branch />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
         {
           path: 'staff',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin', 'manager']}>
               <Staff />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
         {
           path: 'customer',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin', 'manager']}>
               <Customer />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
       ],
@@ -142,6 +142,7 @@ export default function Router() {
         // { path: 'maintenance', element: <Maintenance /> },
         // { path: '500', element: <Page500 /> },
         { path: '404', element: <NotFound /> },
+        { path: '403', element: <Forbidden /> },
         { path: '*', element: <Navigate to='/404' replace /> },
       ],
     },
@@ -177,9 +178,9 @@ export default function Router() {
         {
           path: 'transactions',
           element: (
-            <AuthGuard>
+            <RoleBasedGuard accessibleRoles={['admin', 'manager']}>
               <Transaction />
-            </AuthGuard>
+            </RoleBasedGuard>
           ),
         },
         { path: '/', element: <Navigate to='/sales' replace /> },
@@ -220,5 +221,6 @@ const Customer = Loadable(lazy(() => import('pages/Admin/Customer')));
 // Main
 // const ComingSoon = Loadable(lazy(() => import('pages/ComingSoon')));
 const NotFound = Loadable(lazy(() => import('pages/404')));
+const Forbidden = Loadable(lazy(() => import('pages/403')));
 // const Maintenance = Loadable(lazy(() => import('pages/Maintenance')));
 // const Page500 = Loadable(lazy(() => import('pages/Page500')));
