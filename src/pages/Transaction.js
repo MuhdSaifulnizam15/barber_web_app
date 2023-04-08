@@ -20,6 +20,7 @@ import {
   getTotalSalesByServiceChart,
 } from 'redux/slices/transaction';
 import { getAllBranch } from 'redux/slices/branch';
+import { getStaffSalesStatictics } from 'redux/slices/staff';
 
 const options = [
   {
@@ -57,10 +58,9 @@ const Transaction = () => {
   const [isSelectedBranchDisabled, setIsSelectedBranchDisabled] =
     useState(false);
 
-  const { transaction, services, isLoading } = useSelector(
-    (state) => state.transaction
-  );
+  const { transaction, services } = useSelector((state) => state.transaction);
   const { branch } = useSelector((state) => state.branch);
+  const { staff_stats } = useSelector((state) => state.staff);
 
   const { user, staff: staff_info } = useAuth();
 
@@ -70,19 +70,26 @@ const Transaction = () => {
     await dispatch(getTotalSalesChart(selectedType.name));
     await dispatch(
       getTotalSalesByServiceChart({
-        startDate: startDate.length > 0 ? startDate[0] : startDate,
-        endDate: startDate.length > 0 ? startDate[1] : startDate,
+        startDate: startDate,
+        endDate: endDate,
       })
     );
-    await dispatch(getAllBranch({ limit: 50 }));
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
     console.log('user', user);
     if (user && user?.role !== 'admin') {
       // disabled branch selection (allow only on the respective branch)
       setIsSelectedBranchDisabled(true);
+    } else {
+      await dispatch(getAllBranch({ limit: 50 }));
     }
+
+    await dispatch(
+      getStaffSalesStatictics({
+        branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
+      })
+    );
   }, [user]);
 
   useEffect(async () => {
@@ -111,6 +118,13 @@ const Transaction = () => {
           branch: selectedBranch?.id,
         })
       );
+      await dispatch(
+        getStaffSalesStatictics({
+          branch: selectedBranch?.id,
+          startDate: startDate,
+          endDate: endDate,
+        })
+      );
     }
   }, [endDate, startDate]);
 
@@ -128,6 +142,13 @@ const Transaction = () => {
         branch: selectedBranch?.id,
       })
     );
+    await dispatch(
+      getStaffSalesStatictics({
+        branch: selectedBranch?.id,
+        startDate: startDate,
+        endDate: endDate,
+      })
+    );
   }, [selectedBranch]);
 
   const generateTotalSalesChart = async () => {
@@ -139,6 +160,14 @@ const Transaction = () => {
         startDate: startDate,
         endDate: endDate,
         branch: selectedBranch?.id,
+      })
+    );
+
+    await dispatch(
+      getStaffSalesStatictics({
+        branch: selectedBranch?.id,
+        startDate: startDate,
+        endDate: endDate,
       })
     );
   };
@@ -528,7 +557,7 @@ const Transaction = () => {
                   </div>
                 </div>
 
-                <div className='max-w-4xl border border-slate-200 py-2 px-2'>
+                <div className='max-w-4xl border border-slate-200 py-2 px-2 mb-5'>
                   <div className='max-w-sm mt-3 col-span-6 sm:col-span-4'>
                     <label
                       htmlFor='price'
@@ -590,6 +619,60 @@ const Transaction = () => {
                       labels={services?.label}
                       dataList={services?.data}
                     />
+                  </div>
+                </div>
+
+                <div className='max-w-4xl border border-slate-200 py-2 px-2 mb-5'>
+                  <h5 className='font-medium text-base my-2 ml-2'>
+                    Staff Sales Statistics
+                  </h5>
+
+                  <div className='flex flex-col'>
+                    <div className='py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8'>
+                      <div className='inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg'>
+                        <table className='min-w-full'>
+                          <thead>
+                            <tr>
+                              <th className='px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50'>
+                                Name
+                              </th>
+                              <th className='px-6 py-3 text-xs font-medium leading-4 tracking-wider text-center text-gray-500 uppercase border-b border-gray-200 bg-gray-50'>
+                                Total Sale
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className='bg-white'>
+                            {staff_stats ? (
+                              staff_stats.map((item, index) => (
+                                <tr key={item.id}>
+                                  <td className='px-6 py-4 whitespace-no-wrap border-b border-gray-200'>
+                                    <div className='flex items-center'>
+                                      <div className='text-sm font-medium leading-5 text-gray-900'>
+                                        {item.staff_name}
+                                      </div>
+                                    </div>
+                                  </td>
+
+                                  <td className='px-6 py-4 whitespace-no-wrap border-b border-gray-200'>
+                                    <div className='flex items-center'>
+                                      <div className='text-sm font-medium leading-5 text-gray-900'>
+                                        {item?.total_sale || 0}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td className='text-center py-2'>
+                                  No staff found
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

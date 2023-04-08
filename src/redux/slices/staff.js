@@ -1,6 +1,7 @@
 import { map, filter } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import dayjs from "dayjs";
 
 // utils
 import axios from 'utils/axios';
@@ -11,6 +12,7 @@ const initialState = {
   isLoading: false,
   error: false,
   staff: [],
+  staff_stats: [],
   staff_info: {},
   currPage: 0,
   pagingCounter: 0,
@@ -71,6 +73,12 @@ const slice = createSlice({
     // UPDATE STAFF
     updateStaffSuccess(state, action) {
       state.isLoading = false;
+    },
+
+    // GET STAFF SALES STATISTICS
+    getStaffSalesStatictics(state, action) {
+      state.isLoading = false;
+      state.staff_stats = action.payload;
     },
   },
 });
@@ -202,6 +210,24 @@ export function updateStaff(id, data) {
         progress: undefined,
         theme: 'light',
       });
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getStaffSalesStatictics({ startDate, endDate, branch = '' }) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+     let url = `/staff/sales?`;
+      if (startDate) url += `startDate=${dayjs(startDate).format('YYYY-MM-DD')}`;
+      if (endDate) url += `&endDate=${dayjs(endDate).format('YYYY-MM-DD')}`;
+      if (branch && branch !== 'all') url += `&branch_id=${branch}`;
+
+      const response = await axios.get(url);
+      console.log('response', response.data);
+      dispatch(slice.actions.getStaffSalesStatictics(response.data.result));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
