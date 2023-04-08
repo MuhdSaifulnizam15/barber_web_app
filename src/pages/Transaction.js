@@ -147,7 +147,7 @@ const Transaction = () => {
     <div>
       <main>
         <Navbar current='Transactions' />
-        <Header title='Transaction' />
+        <Header title='Transactions' />
 
         <div className='mx-auto max-w-7xl overflow-auto py-6 sm:px-6 lg:px-8'>
           {showStartDateModal ? (
@@ -272,7 +272,7 @@ const Transaction = () => {
           ) : null}
 
           <div className='px-4 sm:px-0 overflow-auto'>
-            <div className='sm:mt-0 overflow-auto '>
+            <div className='sm:mt-0 overflow-auto'>
               <div className='lg:block md:max-w-3/6 md:items-center md:justify-center'>
                 <div className='max-w-sm col-span-6 sm:col-span-3'>
                   <Listbox
