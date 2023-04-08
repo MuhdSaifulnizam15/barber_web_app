@@ -94,7 +94,12 @@ const Transaction = () => {
 
   useEffect(async () => {
     if (selectedType?.name)
-      await dispatch(getTotalSalesChart(selectedType.name));
+      await dispatch(
+        getTotalSalesChart({
+          type: selectedType.name,
+          branch: selectedBranch?.id,
+        })
+      );
   }, [selectedType]);
 
   useEffect(async () => {
@@ -107,7 +112,23 @@ const Transaction = () => {
         })
       );
     }
-  }, [endDate, startDate, selectedBranch]);
+  }, [endDate, startDate]);
+
+  useEffect(async () => {
+    await dispatch(
+      getTotalSalesChart({
+        type: selectedType.name,
+        branch: selectedBranch?.id,
+      })
+    );
+    await dispatch(
+      getTotalSalesByServiceChart({
+        startDate: startDate,
+        endDate: endDate,
+        branch: selectedBranch?.id,
+      })
+    );
+  }, [selectedBranch]);
 
   const generateTotalSalesChart = async () => {
     console.log('startDate', startDate);
@@ -253,100 +274,250 @@ const Transaction = () => {
           <div className='px-4 sm:px-0 overflow-auto'>
             <div className='sm:mt-0 overflow-auto '>
               <div className='lg:block md:max-w-3/6 md:items-center md:justify-center'>
-                <div className='max-w-4xl mb-10 border border-slate-50 p-1'>
-                  <div className='flex flex-row items-center col-span-6 sm:col-span-3 mb-3'>
-                    <Listbox value={selectedType} onChange={setSelectedType}>
-                      {({ open }) => (
-                        <>
-                          <Listbox.Label className='text-sm font-medium text-gray-700 mr-2'>
-                            Sort By
-                          </Listbox.Label>
-                          <div className='relative mt-1'>
-                            <Listbox.Button className='relative w-1/6 min-w-fit cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
-                              <span className='flex items-center'>
-                                <span
-                                  className='ml-3 capitalize block truncate text-gray-700'
-                                  style={
-                                    !selectedType?.name
-                                      ? { color: 'red' }
-                                      : { color: 'black' }
-                                  }
-                                >
-                                  {selectedType?.name
-                                    ? selectedType.name
-                                    : 'Select One'}
-                                </span>
+                <div className='max-w-sm col-span-6 sm:col-span-3'>
+                  <Listbox
+                    value={selectedBranch}
+                    onChange={setSelectedBranch}
+                    disabled={isSelectedBranchDisabled}
+                  >
+                    {({ open }) => (
+                      <>
+                        <Listbox.Label className='block text-sm font-medium text-gray-700'>
+                          Branch
+                        </Listbox.Label>
+                        <div className='relative mt-1'>
+                          <Listbox.Button className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
+                            <span className='flex items-center'>
+                              <span
+                                className='ml-3 block truncate text-gray-700'
+                                style={
+                                  selectedBranch?.name
+                                    ? { color: 'black' }
+                                    : isSelectedBranchDisabled
+                                    ? { color: 'black' }
+                                    : { color: 'black' }
+                                }
+                              >
+                                {selectedBranch?.name
+                                  ? selectedBranch?.name
+                                  : isSelectedBranchDisabled
+                                  ? selectedBranch?.name || 'Branch Name'
+                                  : 'All Branch'}
                               </span>
-                              <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
-                                <ChevronUpDownIcon
-                                  className='h-5 w-5 text-gray-400'
-                                  aria-hidden='true'
-                                />
-                              </span>
-                            </Listbox.Button>
+                            </span>
+                            <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
+                              <ChevronUpDownIcon
+                                className='h-5 w-5 text-gray-400'
+                                aria-hidden='true'
+                              />
+                            </span>
+                          </Listbox.Button>
 
-                            <Transition
-                              show={open}
-                              as={Fragment}
-                              leave='transition ease-in duration-100'
-                              leaveFrom='opacity-100'
-                              leaveTo='opacity-0'
-                            >
-                              <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-1/6 min-w-fit overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                                {options &&
-                                  options.map((item) => (
-                                    <Listbox.Option
-                                      key={item.id}
-                                      className={({ active }) =>
-                                        classNames(
+                          <Transition
+                            show={open}
+                            as={Fragment}
+                            leave='transition ease-in duration-100'
+                            leaveFrom='opacity-100'
+                            leaveTo='opacity-0'
+                          >
+                            <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                              <Listbox.Option
+                                key={'all'}
+                                className={({ active }) =>
+                                  classNames(
+                                    active
+                                      ? 'text-white bg-indigo-600'
+                                      : 'text-gray-900',
+                                    'relative cursor-default select-none py-2 pl-3 pr-9'
+                                  )
+                                }
+                                value={{ name: 'All Branch', id: 'all' }}
+                              >
+                                {({ selected, active }) => (
+                                  <>
+                                    <div className='flex items-center'>
+                                      <span
+                                        className={classNames(
+                                          selected
+                                            ? 'font-semibold'
+                                            : 'font-normal',
+                                          'ml-3 block truncate'
+                                        )}
+                                      >
+                                        All Branch
+                                      </span>
+                                    </div>
+
+                                    {selected ? (
+                                      <span
+                                        className={classNames(
                                           active
-                                            ? 'text-white bg-indigo-600'
-                                            : 'text-gray-900',
-                                          'capitalize relative cursor-default select-none py-2 pl-3 pr-9'
-                                        )
-                                      }
-                                      value={item}
-                                    >
-                                      {({ selected, active }) => (
-                                        <>
-                                          <div className='flex items-center'>
-                                            <span
-                                              className={classNames(
-                                                selected
-                                                  ? 'font-semibold'
-                                                  : 'font-normal',
-                                                'capitalize ml-3 block truncate'
-                                              )}
-                                            >
-                                              {item.name}
-                                            </span>
-                                          </div>
+                                            ? 'text-white'
+                                            : 'text-indigo-600',
+                                          'absolute inset-y-0 right-0 flex items-center pr-4'
+                                        )}
+                                      >
+                                        <CheckIcon
+                                          className='h-5 w-5'
+                                          aria-hidden='true'
+                                        />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                              {branch.docs &&
+                                branch.docs.map((item) => (
+                                  <Listbox.Option
+                                    key={item.id}
+                                    className={({ active }) =>
+                                      classNames(
+                                        active
+                                          ? 'text-white bg-indigo-600'
+                                          : 'text-gray-900',
+                                        'relative cursor-default select-none py-2 pl-3 pr-9'
+                                      )
+                                    }
+                                    value={item}
+                                  >
+                                    {({ selected, active }) => (
+                                      <>
+                                        <div className='flex items-center'>
+                                          <span
+                                            className={classNames(
+                                              selected
+                                                ? 'font-semibold'
+                                                : 'font-normal',
+                                              'ml-3 block truncate'
+                                            )}
+                                          >
+                                            {item.name}
+                                          </span>
+                                        </div>
 
-                                          {selected ? (
-                                            <span
-                                              className={classNames(
-                                                active
-                                                  ? 'text-white'
-                                                  : 'text-indigo-600',
-                                                'absolute inset-y-0 right-0 flex items-center pr-4'
-                                              )}
-                                            >
-                                              <CheckIcon
-                                                className='h-5 w-5'
-                                                aria-hidden='true'
-                                              />
-                                            </span>
-                                          ) : null}
-                                        </>
-                                      )}
-                                    </Listbox.Option>
-                                  ))}
-                              </Listbox.Options>
-                            </Transition>
-                          </div>
-                        </>
-                      )}
-                    </Listbox>
+                                        {selected ? (
+                                          <span
+                                            className={classNames(
+                                              active
+                                                ? 'text-white'
+                                                : 'text-indigo-600',
+                                              'absolute inset-y-0 right-0 flex items-center pr-4'
+                                            )}
+                                          >
+                                            <CheckIcon
+                                              className='h-5 w-5'
+                                              aria-hidden='true'
+                                            />
+                                          </span>
+                                        ) : null}
+                                      </>
+                                    )}
+                                  </Listbox.Option>
+                                ))}
+                            </Listbox.Options>
+                          </Transition>
+                        </div>
+                      </>
+                    )}
+                  </Listbox>
+                </div>
+
+                <div className='max-w-4xl my-5 border border-slate-200 py-2 p-1'>
+                  <div>
+                    <div className='flex flex-row items-center col-span-6 sm:col-span-3 mb-3'>
+                      <Listbox value={selectedType} onChange={setSelectedType}>
+                        {({ open }) => (
+                          <>
+                            <Listbox.Label className='text-sm font-medium text-gray-700 mr-2'>
+                              Sort By
+                            </Listbox.Label>
+                            <div className='relative mt-1'>
+                              <Listbox.Button className='relative w-1/6 min-w-fit cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
+                                <span className='flex items-center'>
+                                  <span
+                                    className='ml-3 capitalize block truncate text-gray-700'
+                                    style={
+                                      !selectedType?.name
+                                        ? { color: 'red' }
+                                        : { color: 'black' }
+                                    }
+                                  >
+                                    {selectedType?.name
+                                      ? selectedType.name
+                                      : 'Select One'}
+                                  </span>
+                                </span>
+                                <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
+                                  <ChevronUpDownIcon
+                                    className='h-5 w-5 text-gray-400'
+                                    aria-hidden='true'
+                                  />
+                                </span>
+                              </Listbox.Button>
+
+                              <Transition
+                                show={open}
+                                as={Fragment}
+                                leave='transition ease-in duration-100'
+                                leaveFrom='opacity-100'
+                                leaveTo='opacity-0'
+                              >
+                                <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-1/6 min-w-fit overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                                  {options &&
+                                    options.map((item) => (
+                                      <Listbox.Option
+                                        key={item.id}
+                                        className={({ active }) =>
+                                          classNames(
+                                            active
+                                              ? 'text-white bg-indigo-600'
+                                              : 'text-gray-900',
+                                            'capitalize relative cursor-default select-none py-2 pl-3 pr-9'
+                                          )
+                                        }
+                                        value={item}
+                                      >
+                                        {({ selected, active }) => (
+                                          <>
+                                            <div className='flex items-center'>
+                                              <span
+                                                className={classNames(
+                                                  selected
+                                                    ? 'font-semibold'
+                                                    : 'font-normal',
+                                                  'capitalize ml-3 block truncate'
+                                                )}
+                                              >
+                                                {item.name}
+                                              </span>
+                                            </div>
+
+                                            {selected ? (
+                                              <span
+                                                className={classNames(
+                                                  active
+                                                    ? 'text-white'
+                                                    : 'text-indigo-600',
+                                                  'absolute inset-y-0 right-0 flex items-center pr-4'
+                                                )}
+                                              >
+                                                <CheckIcon
+                                                  className='h-5 w-5'
+                                                  aria-hidden='true'
+                                                />
+                                              </span>
+                                            ) : null}
+                                          </>
+                                        )}
+                                      </Listbox.Option>
+                                    ))}
+                                </Listbox.Options>
+                              </Transition>
+                            </div>
+                          </>
+                        )}
+                      </Listbox>
+                    </div>
                   </div>
 
                   <div className='max-w-xl'>
@@ -357,155 +528,7 @@ const Transaction = () => {
                   </div>
                 </div>
 
-                <div className='max-w-4xl border border-slate-50 py-2 px-2'>
-                  <div className='max-w-sm col-span-6 sm:col-span-3'>
-                    <Listbox
-                      value={selectedBranch}
-                      onChange={setSelectedBranch}
-                      disabled={isSelectedBranchDisabled}
-                    >
-                      {({ open }) => (
-                        <>
-                          <Listbox.Label className='block text-sm font-medium text-gray-700'>
-                            Branch
-                          </Listbox.Label>
-                          <div className='relative mt-1'>
-                            <Listbox.Button className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
-                              <span className='flex items-center'>
-                                <span
-                                  className='ml-3 block truncate text-gray-700'
-                                  style={
-                                    selectedBranch?.name
-                                      ? { color: 'black' }
-                                      : isSelectedBranchDisabled
-                                      ? { color: 'black' }
-                                      : { color: 'black' }
-                                  }
-                                >
-                                  {selectedBranch?.name
-                                    ? selectedBranch?.name
-                                    : isSelectedBranchDisabled
-                                    ? selectedBranch?.name || 'Branch Name'
-                                    : 'All Branch'}
-                                </span>
-                              </span>
-                              <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
-                                <ChevronUpDownIcon
-                                  className='h-5 w-5 text-gray-400'
-                                  aria-hidden='true'
-                                />
-                              </span>
-                            </Listbox.Button>
-
-                            <Transition
-                              show={open}
-                              as={Fragment}
-                              leave='transition ease-in duration-100'
-                              leaveFrom='opacity-100'
-                              leaveTo='opacity-0'
-                            >
-                              <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                                <Listbox.Option
-                                  key={'all'}
-                                  className={({ active }) =>
-                                    classNames(
-                                      active
-                                        ? 'text-white bg-indigo-600'
-                                        : 'text-gray-900',
-                                      'relative cursor-default select-none py-2 pl-3 pr-9'
-                                    )
-                                  }
-                                  value={{ name: 'All Branch', id: 'all' }}
-                                >
-                                  {({ selected, active }) => (
-                                    <>
-                                      <div className='flex items-center'>
-                                        <span
-                                          className={classNames(
-                                            selected
-                                              ? 'font-semibold'
-                                              : 'font-normal',
-                                            'ml-3 block truncate'
-                                          )}
-                                        >
-                                          All Branch
-                                        </span>
-                                      </div>
-
-                                      {selected ? (
-                                        <span
-                                          className={classNames(
-                                            active
-                                              ? 'text-white'
-                                              : 'text-indigo-600',
-                                            'absolute inset-y-0 right-0 flex items-center pr-4'
-                                          )}
-                                        >
-                                          <CheckIcon
-                                            className='h-5 w-5'
-                                            aria-hidden='true'
-                                          />
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </Listbox.Option>
-                                {branch.docs &&
-                                  branch.docs.map((item) => (
-                                    <Listbox.Option
-                                      key={item.id}
-                                      className={({ active }) =>
-                                        classNames(
-                                          active
-                                            ? 'text-white bg-indigo-600'
-                                            : 'text-gray-900',
-                                          'relative cursor-default select-none py-2 pl-3 pr-9'
-                                        )
-                                      }
-                                      value={item}
-                                    >
-                                      {({ selected, active }) => (
-                                        <>
-                                          <div className='flex items-center'>
-                                            <span
-                                              className={classNames(
-                                                selected
-                                                  ? 'font-semibold'
-                                                  : 'font-normal',
-                                                'ml-3 block truncate'
-                                              )}
-                                            >
-                                              {item.name}
-                                            </span>
-                                          </div>
-
-                                          {selected ? (
-                                            <span
-                                              className={classNames(
-                                                active
-                                                  ? 'text-white'
-                                                  : 'text-indigo-600',
-                                                'absolute inset-y-0 right-0 flex items-center pr-4'
-                                              )}
-                                            >
-                                              <CheckIcon
-                                                className='h-5 w-5'
-                                                aria-hidden='true'
-                                              />
-                                            </span>
-                                          ) : null}
-                                        </>
-                                      )}
-                                    </Listbox.Option>
-                                  ))}
-                              </Listbox.Options>
-                            </Transition>
-                          </div>
-                        </>
-                      )}
-                    </Listbox>
-                  </div>
-
+                <div className='max-w-4xl border border-slate-200 py-2 px-2'>
                   <div className='max-w-sm mt-3 col-span-6 sm:col-span-4'>
                     <label
                       htmlFor='price'
