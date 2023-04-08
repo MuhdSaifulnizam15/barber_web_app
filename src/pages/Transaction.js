@@ -84,18 +84,20 @@ const Transaction = () => {
     } else {
       await dispatch(getAllBranch({ limit: 50 }));
     }
-
-    await dispatch(
-      getStaffSalesStatictics({
-        branch: user?.role !== 'admin' ? staff_info?.branch_id?.id : '',
-      })
-    );
   }, [user]);
 
   useEffect(async () => {
     if (staff_info) {
       console.log('staff info', staff_info);
       setSelectedBranch(staff_info?.branch_id);
+
+      await dispatch(
+        getStaffSalesStatictics({
+          branch: staff_info?.branch_id?.id,
+          startDate: startDate,
+          endDate: endDate,
+        })
+      );
     }
   }, [staff_info]);
 
