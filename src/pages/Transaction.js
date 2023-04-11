@@ -67,16 +67,6 @@ const Transaction = () => {
   const dispatch = useDispatch();
 
   useEffect(async () => {
-    await dispatch(getTotalSalesChart(selectedType.name));
-    await dispatch(
-      getTotalSalesByServiceChart({
-        startDate: startDate,
-        endDate: endDate,
-      })
-    );
-  }, []);
-
-  useEffect(async () => {
     console.log('user', user);
     if (user && user?.role !== 'admin') {
       // disabled branch selection (allow only on the respective branch)
@@ -92,6 +82,21 @@ const Transaction = () => {
       setSelectedBranch(staff_info?.branch_id);
 
       await dispatch(
+        getTotalSalesChart({
+          type: selectedType?.name,
+          branch: staff_info?.branch_id?.id,
+        })
+      );
+
+      await dispatch(
+        getTotalSalesByServiceChart({
+          startDate: startDate,
+          endDate: endDate,
+          branch: staff_info?.branch_id?.id,
+        })
+      );
+
+      await dispatch(
         getStaffSalesStatictics({
           branch: staff_info?.branch_id?.id,
           startDate: startDate,
@@ -102,7 +107,7 @@ const Transaction = () => {
   }, [staff_info]);
 
   useEffect(async () => {
-    if (selectedType?.name)
+    if (selectedType && selectedType?.name)
       await dispatch(
         getTotalSalesChart({
           type: selectedType.name,
@@ -131,26 +136,28 @@ const Transaction = () => {
   }, [endDate, startDate]);
 
   useEffect(async () => {
-    await dispatch(
-      getTotalSalesChart({
-        type: selectedType.name,
-        branch: selectedBranch?.id,
-      })
-    );
-    await dispatch(
-      getTotalSalesByServiceChart({
-        startDate: startDate,
-        endDate: endDate,
-        branch: selectedBranch?.id,
-      })
-    );
-    await dispatch(
-      getStaffSalesStatictics({
-        branch: selectedBranch?.id,
-        startDate: startDate,
-        endDate: endDate,
-      })
-    );
+    if (selectedBranch) {
+      await dispatch(
+        getTotalSalesChart({
+          type: selectedType.name,
+          branch: selectedBranch?.id,
+        })
+      );
+      await dispatch(
+        getTotalSalesByServiceChart({
+          startDate: startDate,
+          endDate: endDate,
+          branch: selectedBranch?.id,
+        })
+      );
+      await dispatch(
+        getStaffSalesStatictics({
+          branch: selectedBranch?.id,
+          startDate: startDate,
+          endDate: endDate,
+        })
+      );
+    }
   }, [selectedBranch]);
 
   const generateTotalSalesChart = async () => {
