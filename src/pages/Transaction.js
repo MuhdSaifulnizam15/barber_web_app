@@ -266,6 +266,8 @@ const Transaction = () => {
             new Date(selectedYear?.year, 0, 1)
           ).format('YYYY-MM-DD')}`;
 
+    if (selectedBranch?.id && selectedBranch?.id !== 'all') url += `&branch_id=${selectedBranch?.id}`;
+
     // // using Java Script method to get PDF file
     fetch(url, requestOptions)
       .then((response) => {
@@ -276,7 +278,11 @@ const Transaction = () => {
           // Setting various property values
           let alink = document.createElement('a');
           alink.href = fileURL;
-          alink.download = `${selectedMonth?.month ? (selectedMonth?.month).toUpperCase() + '_' + selectedYear?.year : selectedYear?.year}.pdf`;
+          alink.download = `${
+            selectedMonth?.month
+              ? (selectedMonth?.month).toUpperCase() + '_' + selectedYear?.year
+              : selectedYear?.year
+          }.pdf`;
           alink.click();
         });
       })
