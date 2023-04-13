@@ -41,6 +41,47 @@ const options = [
   },
 ];
 
+const YEARS = () => {
+  var max = new Date().getFullYear();
+  var min = 2022;
+  var years = [];
+  let counter = 1;
+
+  for (var i = max; i >= min; i--) {
+    years.push({ id: counter, year: i });
+    counter++;
+  }
+
+  return years;
+};
+
+const MONTHS = (year) => {
+  const full_month = [
+    { id: 1, month: 'January' },
+    { id: 2, month: 'February' },
+    { id: 3, month: 'March' },
+    { id: 4, month: 'April' },
+    { id: 5, month: 'May' },
+    { id: 6, month: 'June' },
+    { id: 7, month: 'July' },
+    { id: 8, month: 'August' },
+    { id: 9, month: 'September' },
+    { id: 10, month: 'October' },
+    { id: 11, month: 'November' },
+    { id: 12, month: 'December' },
+  ];
+  const currYear = new Date().getFullYear();
+
+  if (currYear > year) return full_month;
+  else {
+    const numOfMonth = dayjs().get('month'); // Month (January as 0, December as 11)
+    return full_month.slice(0, numOfMonth + 1);
+  }
+};
+
+// console.log('YEARS', YEARS().reverse());
+// console.log('MONTHS', MONTHS());
+
 const Transaction = () => {
   const [selectedType, setSelectedType] = useState(options[0]);
   // const [startDate, setStartDate] = useState([
@@ -55,8 +96,15 @@ const Transaction = () => {
   const [showStartDateModal, setShowStartDateModal] = useState(false);
   const [showEndDateModal, setShowEndDateModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState();
+  const [selectedYear, setSelectedYear] = useState();
+  const [selectedMonth, setSelectedMonth] = useState();
+  const [isMonthSelectionDisabled, setIsMonthSelectionDisabled] =
+    useState(true);
+  const [listOfYear, setListOfYear] = useState([]);
+  const [listOfMonth, setListOfMonth] = useState([]);
   const [isSelectedBranchDisabled, setIsSelectedBranchDisabled] =
     useState(false);
+  const [downloadDisabled, setDownloadDisabled] = useState(true);
 
   const { transaction, services } = useSelector((state) => state.transaction);
   const { branch } = useSelector((state) => state.branch);
@@ -74,6 +122,7 @@ const Transaction = () => {
     } else {
       await dispatch(getAllBranch({ limit: 50 }));
     }
+    setListOfYear(YEARS().reverse());
   }, [user]);
 
   useEffect(async () => {
@@ -115,6 +164,19 @@ const Transaction = () => {
         })
       );
   }, [selectedType]);
+
+  useEffect(() => {
+    setSelectedMonth();
+    setDownloadDisabled(false);
+    if (selectedYear?.year) {
+      setListOfMonth(MONTHS(selectedYear?.year));
+      setIsMonthSelectionDisabled(false);
+    } else {
+      setIsMonthSelectionDisabled(false);
+      setListOfMonth([]);
+      setDownloadDisabled(true);
+    }
+  }, [selectedYear]);
 
   useEffect(async () => {
     if (startDate && endDate) {
@@ -179,6 +241,46 @@ const Transaction = () => {
         endDate: endDate,
       })
     );
+  };
+
+  // Function will execute on click of button
+  const onButtonClick = () => {
+    const accessToken = window.localStorage.getItem('accessToken');
+    console.log('accessToken', accessToken);
+
+    var myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    var url =
+      selectedYear?.year && selectedMonth?.month
+        ? `http://localhost:3001/api/v1/sales/report/month?date=${dayjs(
+            new Date(selectedYear?.year, selectedMonth?.id - 1, 1)
+          ).format('YYYY-MM-DD')}`
+        : `http://localhost:3001/api/v1/sales/report/annual?date=${dayjs(
+            new Date(selectedYear?.year, 0, 1)
+          ).format('YYYY-MM-DD')}`;
+
+    // // using Java Script method to get PDF file
+    fetch(url, requestOptions)
+      .then((response) => {
+        response.blob().then((blob) => {
+          console.log('blob', blob);
+          // Creating new object of PDF file
+          const fileURL = window.URL.createObjectURL(blob);
+          // Setting various property values
+          let alink = document.createElement('a');
+          alink.href = fileURL;
+          alink.download = `${selectedMonth?.month ? (selectedMonth?.month).toUpperCase() + '_' + selectedYear?.year : selectedYear?.year}.pdf`;
+          alink.click();
+        });
+      })
+      .catch((error) => console.log('error', error));
   };
 
   return (
@@ -682,6 +784,216 @@ const Transaction = () => {
                         </table>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className='max-w-4xl border border-slate-200 py-2 px-2 mb-5'>
+                  <h5 className='font-medium text-base my-2 ml-2'>
+                    Generate Report
+                  </h5>
+
+                  <div className='max-w-sm col-span-6 sm:col-span-3 m-3'>
+                    <Listbox value={selectedYear} onChange={setSelectedYear}>
+                      {({ open }) => (
+                        <>
+                          <Listbox.Label className='block text-sm font-medium text-gray-700'>
+                            Select Year
+                          </Listbox.Label>
+                          <div className='relative mt-1'>
+                            <Listbox.Button className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
+                              <span className='flex items-center'>
+                                <span
+                                  className='ml-3 block truncate text-gray-700'
+                                  style={
+                                    selectedYear?.year
+                                      ? { color: 'black' }
+                                      : { color: 'red' }
+                                  }
+                                >
+                                  {selectedYear?.year
+                                    ? selectedYear?.year
+                                    : 'Select Year'}
+                                </span>
+                              </span>
+                              <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
+                                <ChevronUpDownIcon
+                                  className='h-5 w-5 text-gray-400'
+                                  aria-hidden='true'
+                                />
+                              </span>
+                            </Listbox.Button>
+
+                            <Transition
+                              show={open}
+                              as={Fragment}
+                              leave='transition ease-in duration-100'
+                              leaveFrom='opacity-100'
+                              leaveTo='opacity-0'
+                            >
+                              <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                                {listOfYear &&
+                                  listOfYear.map((item, index) => (
+                                    <Listbox.Option
+                                      key={item.id}
+                                      className={({ active }) =>
+                                        classNames(
+                                          active
+                                            ? 'text-white bg-indigo-600'
+                                            : 'text-gray-900',
+                                          'relative cursor-default select-none py-2 pl-3 pr-9'
+                                        )
+                                      }
+                                      value={item}
+                                    >
+                                      {({ selected, active }) => (
+                                        <>
+                                          <div className='flex items-center'>
+                                            <span
+                                              className={classNames(
+                                                selected
+                                                  ? 'font-semibold'
+                                                  : 'font-normal',
+                                                'ml-3 block truncate'
+                                              )}
+                                            >
+                                              {item.year}
+                                            </span>
+                                          </div>
+
+                                          {selected ? (
+                                            <span
+                                              className={classNames(
+                                                active
+                                                  ? 'text-white'
+                                                  : 'text-indigo-600',
+                                                'absolute inset-y-0 right-0 flex items-center pr-4'
+                                              )}
+                                            >
+                                              <CheckIcon
+                                                className='h-5 w-5'
+                                                aria-hidden='true'
+                                              />
+                                            </span>
+                                          ) : null}
+                                        </>
+                                      )}
+                                    </Listbox.Option>
+                                  ))}
+                              </Listbox.Options>
+                            </Transition>
+                          </div>
+                        </>
+                      )}
+                    </Listbox>
+                  </div>
+
+                  <div className='max-w-sm col-span-6 sm:col-span-3 m-3'>
+                    <Listbox
+                      value={selectedMonth}
+                      onChange={setSelectedMonth}
+                      disabled={isMonthSelectionDisabled}
+                    >
+                      {({ open }) => (
+                        <>
+                          <Listbox.Label className='block text-sm font-medium text-gray-700'>
+                            Select Month
+                          </Listbox.Label>
+                          <div className='relative mt-1'>
+                            <Listbox.Button className='relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'>
+                              <span className='flex items-center'>
+                                <span
+                                  className='ml-3 block truncate text-gray-700'
+                                  style={
+                                    selectedMonth?.month
+                                      ? { color: 'black' }
+                                      : { color: 'red' }
+                                  }
+                                >
+                                  {selectedMonth?.month
+                                    ? selectedMonth?.month
+                                    : 'Select Month'}
+                                </span>
+                              </span>
+                              <span className='pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2'>
+                                <ChevronUpDownIcon
+                                  className='h-5 w-5 text-gray-400'
+                                  aria-hidden='true'
+                                />
+                              </span>
+                            </Listbox.Button>
+
+                            <Transition
+                              show={open}
+                              as={Fragment}
+                              leave='transition ease-in duration-100'
+                              leaveFrom='opacity-100'
+                              leaveTo='opacity-0'
+                            >
+                              <Listbox.Options className='absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                                {listOfMonth &&
+                                  listOfMonth.map((item, index) => (
+                                    <Listbox.Option
+                                      key={item.id}
+                                      className={({ active }) =>
+                                        classNames(
+                                          active
+                                            ? 'text-white bg-indigo-600'
+                                            : 'text-gray-900',
+                                          'relative cursor-default select-none py-2 pl-3 pr-9'
+                                        )
+                                      }
+                                      value={item}
+                                    >
+                                      {({ selected, active }) => (
+                                        <>
+                                          <div className='flex items-center'>
+                                            <span
+                                              className={classNames(
+                                                selected
+                                                  ? 'font-semibold'
+                                                  : 'font-normal',
+                                                'ml-3 block truncate'
+                                              )}
+                                            >
+                                              {item.month}
+                                            </span>
+                                          </div>
+
+                                          {selected ? (
+                                            <span
+                                              className={classNames(
+                                                active
+                                                  ? 'text-white'
+                                                  : 'text-indigo-600',
+                                                'absolute inset-y-0 right-0 flex items-center pr-4'
+                                              )}
+                                            >
+                                              <CheckIcon
+                                                className='h-5 w-5'
+                                                aria-hidden='true'
+                                              />
+                                            </span>
+                                          ) : null}
+                                        </>
+                                      )}
+                                    </Listbox.Option>
+                                  ))}
+                              </Listbox.Options>
+                            </Transition>
+                          </div>
+                        </>
+                      )}
+                    </Listbox>
+                  </div>
+
+                  <div className='flex justify-end sm:justify-start'>
+                    <button
+                      className='my-3 bg-blue-500 px-4 py-2 rounded-md text-md text-white'
+                      onClick={onButtonClick}
+                      disabled={downloadDisabled}
+                    >
+                      Download PDF
+                    </button>
                   </div>
                 </div>
               </div>
