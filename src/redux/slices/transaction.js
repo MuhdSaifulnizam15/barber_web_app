@@ -51,13 +51,12 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getTotalSalesChart({ type = 'daily', branch = ''  }) {
+export function getTotalSalesChart({ type = 'daily', branch = '' }) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      let url = `/sales/chart/${type}?`;
-      if (branch && branch !== 'all') url += `&branch_id=${branch}`;
-
+      let url = `/sales/chart/${type}`;
+      if (branch && branch !== 'all') url += `?branch_id=${branch}`;
       const response = await axios.get(url);
       console.log("response", response.data);
       dispatch(slice.actions.getTotalSalesSuccess(response.data.chart));
