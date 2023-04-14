@@ -91,7 +91,7 @@ export function getAllSales({
         url += `&start_date=${dayjs(start_date).format('YYYY-MM-DD')}`;
       if (end_date)
         url += `&end_date=${dayjs(end_date).format('YYYY-MM-DD')}`;
-      if (branchId)
+      if (branchId && branchId !== 'all')
         url += `&branch_id=${branchId}`;
 
       console.log('url', url);
