@@ -190,7 +190,7 @@ const ResetPassword = () => {
               token: searchParams.get('token'),
               password: data.confirm_password,
             };
-            console.log('formattedData', formattedData)
+            console.log('formattedData', formattedData);
             await dispatch(resetPassword(formattedData));
           } else resetInputField();
         }
@@ -223,7 +223,7 @@ const ResetPassword = () => {
         <div>
           <img
             className='mx-auto h-12 w-auto'
-            src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
+            src='/images/logo.png'
             alt='Your Company'
           />
           <h2 className='my-6 text-center text-3xl font-bold tracking-tight'>

@@ -28,7 +28,7 @@ const ForgotPassword = () => {
         const res = await dispatch(forgotPassword(formattedData));
         setIsLoading(false);
         console.log('res', res);
-        if(res?.status) navigate(PATH_AUTH.login);
+        if (res?.status) navigate(PATH_AUTH.login);
       }
     } catch (err) {
       console.log('err', err);
@@ -53,7 +53,7 @@ const ForgotPassword = () => {
         <div>
           <img
             className='mx-auto h-12 w-auto'
-            src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
+            src='/images/logo.png'
             alt='Your Company'
           />
           <h2 className='my-6 text-center text-3xl font-bold tracking-tight'>
