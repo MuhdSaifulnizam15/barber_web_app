@@ -156,7 +156,7 @@ const Transaction = () => {
   }, [staff_info]);
 
   useEffect(async () => {
-    if (selectedType && selectedType?.name)
+    if (selectedType && selectedType?.name && selectedBranch?.id)
       await dispatch(
         getTotalSalesChart({
           type: selectedType.name,
