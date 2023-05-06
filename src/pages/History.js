@@ -61,15 +61,28 @@ const History = () => {
     if (user) {
       await dispatch(
         getAllSales({
-          userId: user?.role === 'staff' ? user?.id : '',
-          branchId: selectedBranch?.id ? selectedBranch?.id : user?.role !== 'admin' ? staff?.branch_id?.id : '',
+          userId: user?.role !== 'admin' ? user?.id : '',
+          branchId: selectedBranch?.id
+            ? selectedBranch?.id
+            : user?.role !== 'admin'
+            ? staff?.branch_id?.id
+            : '',
           start_date: startDate,
           end_date: startDate,
         })
       );
       await dispatch(getAllBranch({ limit: 50 }));
+
+      if (user?.role !== 'admin') setIsSelectedBranchDisabled(true);
     }
   }, [dispatch, user]);
+
+  useEffect(async () => {
+    if (staff) {
+      console.log('staff info', staff);
+      if (user?.role !== 'admin') setSelectedBranch(staff?.branch_id);
+    }
+  }, [staff]);
 
   useEffect(() => {
     if (!isLoading) {
@@ -86,8 +99,12 @@ const History = () => {
     await dispatch(
       getAllSales({
         page: currentPage,
-        userId: user?.role === 'staff' ? user?.id : '',
-        branchId: selectedBranch?.id ? selectedBranch?.id : user?.role !== 'admin' ? staff?.branch_id?.id : '',
+        userId: user?.role !== 'admin' ? user?.id : '',
+        branchId: selectedBranch?.id
+          ? selectedBranch?.id
+          : user?.role !== 'admin'
+          ? staff?.branch_id?.id
+          : '',
         start_date: startDate,
         end_date: endDate,
       })
@@ -100,8 +117,12 @@ const History = () => {
     await dispatch(
       getAllSales({
         page: 1,
-        userId: user?.role === 'staff' ? user?.id : '',
-        branchId: selectedBranch?.id ? selectedBranch?.id : user?.role !== 'admin' ? staff?.branch_id?.id : '',
+        userId: user?.role !== 'admin' ? user?.id : '',
+        branchId: selectedBranch?.id
+          ? selectedBranch?.id
+          : user?.role !== 'admin'
+          ? staff?.branch_id?.id
+          : '',
         start_date: startDate,
         end_date: endDate,
       })
@@ -145,8 +166,12 @@ const History = () => {
     await dispatch(
       getAllSales({
         page: currentPage,
-        userId: user?.role === 'staff' ? user?.id : '',
-        branchId: selectedBranch?.id ? selectedBranch?.id : user?.role !== 'admin' ? staff?.branch_id?.id : '',
+        userId: user?.role !== 'admin' ? user?.id : '',
+        branchId: selectedBranch?.id
+          ? selectedBranch?.id
+          : user?.role !== 'admin'
+          ? staff?.branch_id?.id
+          : '',
         start_date: startDate,
         end_date: endDate,
       })
