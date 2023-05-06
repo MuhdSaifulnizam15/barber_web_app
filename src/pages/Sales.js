@@ -70,7 +70,10 @@ const Sales = () => {
       setSelectedBranch(staff_info?.branch_id);
     }
     await dispatch(
-      getAllStaff({ limit: 50, branch: staff_info?.branch_id?.id })
+      getAllStaff({ 
+        limit: 50, 
+        // branch: staff_info?.branch_id?.id 
+      })
     );
   }, [staff_info]);
 
@@ -82,7 +85,10 @@ const Sales = () => {
     // ) {
       setIsSelectedStaffDisabled(false);
       setSelectedStaff({});
-      await dispatch(getAllStaff({ limit: 50, branch: selectedBranch?.id }));
+      await dispatch(getAllStaff({ 
+        limit: 50, 
+        // branch: selectedBranch?.id 
+      }));
     // } else {
     //   setIsSelectedStaffDisabled(true);
     // }
