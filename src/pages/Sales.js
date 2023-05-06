@@ -59,7 +59,7 @@ const Sales = () => {
     console.log('user', user);
     if (user && user?.role !== 'admin') {
       // disabled branch selection (allow only on the respective branch)
-      setIsSelectedBranchDisabled(true);
+      // setIsSelectedBranchDisabled(true);
     }
   }, [user]);
 
@@ -75,17 +75,17 @@ const Sales = () => {
   }, [staff_info]);
 
   useEffect(async () => {
-    if (
-      selectedBranch &&
-      selectedBranch.hasOwnProperty('name') &&
-      user?.role !== 'staff'
-    ) {
+    // if (
+    //   selectedBranch &&
+    //   selectedBranch.hasOwnProperty('name') &&
+    //   user?.role !== 'staff'
+    // ) {
       setIsSelectedStaffDisabled(false);
       setSelectedStaff({});
       await dispatch(getAllStaff({ limit: 50, branch: selectedBranch?.id }));
-    } else {
-      setIsSelectedStaffDisabled(true);
-    }
+    // } else {
+    //   setIsSelectedStaffDisabled(true);
+    // }
   }, [selectedBranch]);
 
   useEffect(() => {
